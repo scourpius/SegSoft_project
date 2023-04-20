@@ -6,15 +6,8 @@ import java.util.*;
 
 public class TestingServlet extends HttpServlet {
 
-    //Driver name
-    static final String JDBC_driver = "com.mysql.jdbc.Driver";
     //db url
-    static final String DB_URL = "jdbc:mysql://localhost/TEST";
-
-    //credentials
-    static final String USER = "root";
-    static final String PASS = "password";
-
+    static final String DB_URL = "jdbc:sqlite://localhost/TEST.db";
 
     static int counter = 0;
 
@@ -45,7 +38,6 @@ public class TestingServlet extends HttpServlet {
         counter++;
 
 
-
         //Database operation example:
         String title = "Database Result";
         String docType = "<!doctype html public \"-//w3c//dtd html 4.0 " + "transitional//en\">\n";
@@ -54,22 +46,23 @@ public class TestingServlet extends HttpServlet {
                 "<head><title>" + title + "</title></head>" +
                 "<body bgcolor = \"#f0f0f0\">\n" +
                 "<h1 align = \"center\">" + title + "</h1>\n");
-        try {
-            //register drive
-            Class.forName(JDBC_driver);
 
+        Connection conn = null;
+        Statement stmt = null;
+        ResultSet rs = null;
+        try {
             //open connection
-            Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+            conn = DriverManager.getConnection(DB_URL);
 
             //SQL query
-            Statement stmt = conn.createStatement();
+            stmt = conn.createStatement();
 
             //sql query goes here
             String sql = "SELECT id FROM Users";
-            ResultSet rs = stmt.executeQuery(sql);
+            rs = stmt.executeQuery(sql);
 
             //extracting and displaying data from results
-            while (rs.next()){
+            while (rs.next()) {
                 int id = rs.getInt("id");
                 out.println("ID: " + id + "<br>");
             }
@@ -78,8 +71,16 @@ public class TestingServlet extends HttpServlet {
             rs.close();
             stmt.close();
             conn.close();
-        } catch (SQLException | ClassNotFoundException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
