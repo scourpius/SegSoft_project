@@ -1,3 +1,8 @@
+package src;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 public interface Authenticator {
     /*
     created account info should be stored (serialised) in
