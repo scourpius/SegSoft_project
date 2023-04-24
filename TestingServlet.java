@@ -24,18 +24,15 @@ public class TestingServlet extends HttpServlet {
         out.println("<HEAD>");
         out.println("</HEAD>");
         out.println("<BODY>");
-        out.println("<H1>The Counter App!</H1>");
-        out.println("<H1>Value=" + counter + "</H1>");
-        out.print("<form action=\"");
-        out.print("Test\" ");
-        out.println("method=GET>");
-        out.println("<br>");
-        out.println("<input type=submit name=increment>");
+        out.println("<form name='loginform'");
+        out.println("action='http://localhost:8080/myApp/Test2' method='GET'>");
+        out.print("<input type='text' size=35 name='username'>");
+        out.print("<input type='password' size=35 name='password'>");
+        out.println("<input type='hidden' value=redirect_url>");
+        out.println("<input type='submit' value='Submit'>");
         out.println("</form>");
         out.println("</BODY>");
-
         out.println("</HTML>");
-        counter++;
 
 
         //Database operation example:
