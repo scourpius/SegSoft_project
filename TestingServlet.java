@@ -1,16 +1,15 @@
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.*;
 import javax.servlet.http.*;
+import javax.sql.DataSource;
+
 import java.io.*;
 import java.sql.*;
 import java.util.*;
 
 public class TestingServlet extends HttpServlet {
-
-    //db url
-    static final String DB_URL = "jdbc:sqlite://localhost/TEST.db";
-
-    static int counter = 0;
-
     public void init() throws ServletException {
         super.init();
     }
@@ -31,53 +30,44 @@ public class TestingServlet extends HttpServlet {
         out.println("<input type='hidden' value=redirect_url>");
         out.println("<input type='submit' value='Submit'>");
         out.println("</form>");
-        out.println("</BODY>");
-        out.println("</HTML>");
-
-
-        //Database operation example:
-        String title = "Database Result";
-        String docType = "<!doctype html public \"-//w3c//dtd html 4.0 " + "transitional//en\">\n";
-
-        out.println(docType + "<html>\n" +
-                "<head><title>" + title + "</title></head>" +
-                "<body bgcolor = \"#f0f0f0\">\n" +
-                "<h1 align = \"center\">" + title + "</h1>\n");
 
         Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
+
+        String sql = "SELECT * FROM accounts";
+
         try {
-            //open connection
-            conn = DriverManager.getConnection(DB_URL);
+            // Obtain the DataSource from JNDI
+            Context initContext = new InitialContext();
+            Context envContext = (Context) initContext.lookup("java:/comp/env");
+            DataSource dataSource = (DataSource) envContext.lookup("jdbc/mydb");
+                        
+            conn = dataSource.getConnection();
 
-            //SQL query
-            stmt = conn.createStatement();
-
-            //sql query goes here
-            String sql = "SELECT id FROM Users";
-            rs = stmt.executeQuery(sql);
-
-            //extracting and displaying data from results
+            Statement stmt  = conn.createStatement();
+            ResultSet rs    = stmt.executeQuery(sql);
+            
+            // loop through the result set
             while (rs.next()) {
-                int id = rs.getInt("id");
-                out.println("ID: " + id + "<br>");
+                out.println("<H1>" + rs.getString("username") + "</H1>");
+                out.println("<H1>" + rs.getString("password") + "</H1>");
             }
-            out.println("</body></html>");
-
-            rs.close();
-            stmt.close();
-            conn.close();
+            out.println("<H1>Table created.</H1>");
+            
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
+            out.println("<H1>SQL error.</H1>");
+        } catch (NamingException e){
+            out.println("<H1>Naming error.</H1>");
+        }finally {
             try {
-                if (rs != null) rs.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+                if (conn != null) {
+                    conn.close();
+                }
+            } catch (SQLException ex) {
+                out.println("<H1>SQL error2.</H1>");
             }
         }
+
+        out.println("</BODY>");
+        out.println("</HTML>");
     }
 }
