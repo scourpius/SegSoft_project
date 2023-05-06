@@ -1,5 +1,7 @@
 package src;
 
+import src.Exceptions.*;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -12,7 +14,7 @@ public interface Authenticator {
     • precondition: pwd1 == pwd2
     • the account pwd must be stored in encrypted form
      */
-    void create_account(String name, String pwd1, String pwd2);
+    void create_account(String name, String pwd1, String pwd2) throws Exception;
 
     /*
     deletes an existing account object
@@ -36,7 +38,7 @@ public interface Authenticator {
     • pwd1 == pwd2 (see note in comments on
     create_account)
  */
-    void change_pwd(String name, String pwd1, String pwd2);
+    void change_pwd(String name, String pwd1, String pwd2) throws Exception;
 
     /*
     authenticates the caller, given name and password
@@ -50,16 +52,16 @@ public interface Authenticator {
     • otherwise raise exception (AuthenticationError)
     • must not let password flow anywhere else
      */
-    Account authenticate_user(String name, String pwd);
+    Account authenticate_user(String name, String pwd) throws Exception, LockedAccountException, AuthenticationErrorException, UndefinedAccountException;
 
     /*
     the user looses its authentication
     • logs out the account a (sets logged_in to false)
     • preconditions
     • if user is not authenticated, raises exception
-    (AlreadyAutheticated)
+    (AlreadyAuthenticated)
      */
-    void logout(Account acc);
+    void logout(Account acc) throws AlreadyAuthenticatedException;
 
     /*
     used to verify is user making the request to webApp is
