@@ -48,5 +48,23 @@
         <servlet-name>CreateAccountAuth</servlet-name>
         <url-pattern>/createAccountAuth</url-pattern>
     </servlet-mapping>
+
+        <servlet>
+        <servlet-name>DeleteAccount</servlet-name>
+        <servlet-class>DeleteAccount</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeleteAccount</servlet-name>
+        <url-pattern>/deleteAccount</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DeleteAccountAuth</servlet-name>
+        <servlet-class>DeleteAccountAuth</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeleteAccountAuth</servlet-name>
+        <url-pattern>/deleteAccountAuth</url-pattern>
+    </servlet-mapping>
 </web-app>
 
