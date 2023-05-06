@@ -8,7 +8,7 @@ import java.io.*;
 import java.sql.*;
 import java.util.*;
 
-public class LoginAuth extends HttpServlet {
+public class CreateAccountAuth extends HttpServlet {
     public void init() throws ServletException {
         super.init();
     }
@@ -26,7 +26,7 @@ public class LoginAuth extends HttpServlet {
 
             Connection conn = null;
 
-            String sql = "SELECT password FROM accounts where username = ?";
+            String sql = "SELECT * FROM accounts where username = ?";
 
         try {
             // Obtain the DataSource from JNDI
@@ -40,10 +40,18 @@ public class LoginAuth extends HttpServlet {
 
             ResultSet rs = pstmt.executeQuery();
 
-            if (!rs.next() || !rs.getString("password").equals(rPwd))
-                response.sendRedirect("/myApp/login");
-            else
+            if (rs.next())
+                response.sendRedirect("/myApp/createAccount");
+            else{
+                sql = "INSERT INTO accounts(username,password) VALUES(?,?)";
+
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setString(1, rName);
+                pstmt.setString(2, rPwd);
+                pstmt.executeUpdate();
+                
                 response.sendRedirect("/myApp/main");
+            }
             
             //TODO in the future this will check for encrypted passwords + create session
             

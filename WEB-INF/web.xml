@@ -30,5 +30,23 @@
         <servlet-name>MainPage</servlet-name>
         <url-pattern>/main</url-pattern>
     </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CreateAccount</servlet-name>
+        <servlet-class>CreateAccount</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CreateAccount</servlet-name>
+        <url-pattern>/createAccount</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CreateAccountAuth</servlet-name>
+        <servlet-class>CreateAccountAuth</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CreateAccountAuth</servlet-name>
+        <url-pattern>/createAccountAuth</url-pattern>
+    </servlet-mapping>
 </web-app>
 
