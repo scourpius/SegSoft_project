@@ -77,4 +77,6 @@ public interface Authenticator {
         needs to know who is the authority requesting the op)
      */
     Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response);
+
+    String encrypt(String data) throws Exception;
 }

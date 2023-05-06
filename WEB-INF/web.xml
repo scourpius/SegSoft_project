@@ -4,26 +4,31 @@
            xsi:schemaLocation="http://java.sun.com/xml/ns/javaee
 		  http://java.sun.com/xml/ns/javaee/web-app_3_1.xsd"
            version="3.1">
-<!--
     <servlet>
-        <servlet-name>HelloWorld</servlet-name>
-        <servlet-class>test.HelloWorld</servlet-class>
-    </servlet> -->
-    <servlet>
-        <servlet-name>TestingServlet</servlet-name>
-        <servlet-class>TestingServlet</servlet-class>
+        <servlet-name>Login</servlet-name>
+        <servlet-class>Login</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>TestingServlet</servlet-name>
-        <url-pattern>/Test</url-pattern>
+        <servlet-name>Login</servlet-name>
+        <url-pattern>/login</url-pattern>
     </servlet-mapping>
+
     <servlet>
-        <servlet-name>TestingServlet2</servlet-name>
-        <servlet-class>TestingServlet2</servlet-class>
+        <servlet-name>LoginAuth</servlet-name>
+        <servlet-class>LoginAuth</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>TestingServlet2</servlet-name>
-        <url-pattern>/Test2</url-pattern>
+        <servlet-name>LoginAuth</servlet-name>
+        <url-pattern>/loginAuth</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>MainPage</servlet-name>
+        <servlet-class>MainPage</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MainPage</servlet-name>
+        <url-pattern>/main</url-pattern>
     </servlet-mapping>
 </web-app>
 

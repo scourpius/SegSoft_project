@@ -1,27 +1,27 @@
 package src;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import java.security.InvalidKeyException;
+import java.security.Key;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 
 
 public class AuthenticatorImpl implements Authenticator {
+    private static final String ALGO = "AES";
+    private static final byte[] keyValue = new byte[] { 'F', 'C', 'T', '/', 'U', 'N', 'L', 'r',
+                                                        'o', 'c', 'k','s', '!', '!', 'd', 'i' };
+    private Key key = new SecretKeySpec(keyValue, ALGO);
 
-    private final String databaseURL;
-
-    /**
-     * TODO: Finish this
-     */
-    public AuthenticatorImpl(String databaseURL) {
-        this.databaseURL = databaseURL;
-        Connection conn = connect();
-        try {
-            conn.createStatement().execute("CREATE TABLE IF NOT EXISTS Accounts(\n)" +
-                    "name text PRIMARY KEY,\n" +
-                    "pwd ");
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+    public AuthenticatorImpl() {
+        
     }
 
     @Override
@@ -59,14 +59,15 @@ public class AuthenticatorImpl implements Authenticator {
         return null;
     }
 
-    private Connection connect() {
-        try {
-            Connection conn = DriverManager.getConnection(databaseURL);
-            System.out.println("Connection to SQLite has been established.");
-            return conn;
-        } catch (SQLException e) {
-            e.printStackTrace();
+    @Override
+    public String encrypt(String data){
+        try{
+            Cipher c = Cipher.getInstance(ALGO);
+            c.init(Cipher.ENCRYPT_MODE, key);
+            byte[] encVal = c.doFinal(data.getBytes());
+            return java.util.Base64.getEncoder().encodeToString(encVal);
+        }catch(Exception e){
+            return null;
         }
-        return null; //should never happen
     }
 }
