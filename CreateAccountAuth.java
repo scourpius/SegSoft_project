@@ -1,3 +1,6 @@
+import src.Authenticator;
+import src.AuthenticatorImpl;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -16,6 +19,7 @@ public class CreateAccountAuth extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
             String rName = request.getParameter("username");
             String rPwd = request.getParameter("password");
+            String rPwd2 = request.getParameter("password2");
 
             response.setContentType("text/html");
             PrintWriter out = response.getWriter();
@@ -24,50 +28,15 @@ public class CreateAccountAuth extends HttpServlet {
             out.println("</HEAD>");
             out.println("<BODY>");
 
-            Connection conn = null;
-
-            String sql = "SELECT * FROM accounts where username = ?";
+            Authenticator auth = new AuthenticatorImpl("accounts.db");
 
         try {
-            // Obtain the DataSource from JNDI
-            Context initContext = new InitialContext();
-            Context envContext = (Context) initContext.lookup("java:/comp/env");
-            DataSource dataSource = (DataSource) envContext.lookup("jdbc/mydb");           
-            conn = dataSource.getConnection();
-
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, rName);
-
-            ResultSet rs = pstmt.executeQuery();
-
-            if (rs.next())
-                response.sendRedirect("/myApp/createAccount");
-            else{
-                sql = "INSERT INTO accounts(username,password) VALUES(?,?)";
-
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setString(1, rName);
-                pstmt.setString(2, rPwd);
-                pstmt.executeUpdate();
-                
-                response.sendRedirect("/myApp/main");
-            }
-            
-            //TODO in the future this will check for encrypted passwords + create session
-            
-        } catch (SQLException e) {
-            out.println("<H1>SQL error.</H1>");
-        } catch (NamingException e){
-            out.println("<H1>Naming error.</H1>");
-        }finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-            } catch (SQLException ex) {
-                out.println("<H1>SQL error2.</H1>");
-            }
+            auth.create_account(rName, rPwd, rPwd2);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
+
+        //TODO in the future this will check for encrypted passwords + create session
 
             out.println("</BODY>");
             out.println("</HTML>");
