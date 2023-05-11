@@ -1,8 +1,10 @@
 package src;
 
 import src.Exceptions.*;
+
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.security.Key;
@@ -11,9 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AuthenticatorImpl implements Authenticator {
+public class AuthenticatorImpl extends HttpServlet implements Authenticator {
 
-    private final String databaseURL;
+    private final String databaseURL = "./accounts.db";
     private static final String tableName = "Accounts";
 
     private static List<Account> accountList;
@@ -26,8 +28,7 @@ public class AuthenticatorImpl implements Authenticator {
     Key key = new SecretKeySpec(keyValue, ALGO);
 
 
-    public AuthenticatorImpl(String databaseURL) {
-        this.databaseURL = databaseURL;
+    public AuthenticatorImpl() {
         try (Connection conn = connect()){
             conn.createStatement().execute("CREATE TABLE IF NOT EXISTS " + tableName + "(\n" +
                     "name text PRIMARY KEY,\n" +

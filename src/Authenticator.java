@@ -34,7 +34,7 @@ public interface Authenticator {
     changes the password of the account name to pwd1
     • pwd1 and pwd2 given in cleartext
     • preconditions:
-    • name must identify an created account
+    • name must identify a created account
     • pwd1 == pwd2 (see note in comments on
     create_account)
  */
@@ -42,7 +42,7 @@ public interface Authenticator {
 
     /*
     authenticates the caller, given name and password
-    • checks if name is defined as a account name
+    • checks if name is defined as an account name
     • if not, raise exception (UndefinedAccount)
     • checks if account is locked
     • if locked, raise exception (LockedAccount)

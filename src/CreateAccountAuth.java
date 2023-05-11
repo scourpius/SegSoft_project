@@ -1,15 +1,8 @@
-import src.Authenticator;
-import src.AuthenticatorImpl;
+package src;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 import javax.servlet.*;
 import javax.servlet.http.*;
-import javax.sql.DataSource;
 import java.io.*;
-import java.sql.*;
-import java.util.*;
 
 public class CreateAccountAuth extends HttpServlet {
     public void init() throws ServletException {
@@ -28,7 +21,7 @@ public class CreateAccountAuth extends HttpServlet {
             out.println("</HEAD>");
             out.println("<BODY>");
 
-            Authenticator auth = new AuthenticatorImpl("accounts.db");
+            Authenticator auth = new AuthenticatorImpl();
 
         try {
             auth.create_account(rName, rPwd, rPwd2);

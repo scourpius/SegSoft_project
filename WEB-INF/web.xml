@@ -6,7 +6,7 @@
            version="3.1">
     <servlet>
         <servlet-name>Login</servlet-name>
-        <servlet-class>Login</servlet-class>
+        <servlet-class>src.Login</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>Login</servlet-name>
@@ -15,7 +15,7 @@
 
     <servlet>
         <servlet-name>LoginAuth</servlet-name>
-        <servlet-class>LoginAuth</servlet-class>
+        <servlet-class>src.LoginAuth</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>LoginAuth</servlet-name>
@@ -24,7 +24,7 @@
 
     <servlet>
         <servlet-name>MainPage</servlet-name>
-        <servlet-class>MainPage</servlet-class>
+        <servlet-class>src.MainPage</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>MainPage</servlet-name>
@@ -33,7 +33,7 @@
 
     <servlet>
         <servlet-name>CreateAccount</servlet-name>
-        <servlet-class>CreateAccount</servlet-class>
+        <servlet-class>src.CreateAccount</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>CreateAccount</servlet-name>
@@ -42,7 +42,7 @@
 
     <servlet>
         <servlet-name>CreateAccountAuth</servlet-name>
-        <servlet-class>CreateAccountAuth</servlet-class>
+        <servlet-class>src.CreateAccountAuth</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>CreateAccountAuth</servlet-name>
@@ -51,7 +51,7 @@
 
         <servlet>
         <servlet-name>DeleteAccount</servlet-name>
-        <servlet-class>DeleteAccount</servlet-class>
+        <servlet-class>src.DeleteAccount</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>DeleteAccount</servlet-name>
@@ -60,11 +60,16 @@
 
     <servlet>
         <servlet-name>DeleteAccountAuth</servlet-name>
-        <servlet-class>DeleteAccountAuth</servlet-class>
+        <servlet-class>src.DeleteAccountAuth</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>DeleteAccountAuth</servlet-name>
         <url-pattern>/deleteAccountAuth</url-pattern>
     </servlet-mapping>
+
+
+    <classpath>
+        <pathelement location="WEB-INF/lib/servlet.jar"/>
+    </classpath>
 </web-app>
 

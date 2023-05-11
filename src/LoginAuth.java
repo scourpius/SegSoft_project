@@ -1,3 +1,5 @@
+package src;
+
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -8,13 +10,14 @@ import java.io.*;
 import java.sql.*;
 import java.util.*;
 
-public class DeleteAccountAuth extends HttpServlet {
+public class LoginAuth extends HttpServlet {
     public void init() throws ServletException {
         super.init();
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
             String rName = request.getParameter("username");
+            String rPwd = request.getParameter("password");
 
             response.setContentType("text/html");
             PrintWriter out = response.getWriter();
@@ -25,7 +28,7 @@ public class DeleteAccountAuth extends HttpServlet {
 
             Connection conn = null;
 
-            String sql = "SELECT * FROM accounts where username = ?";
+            String sql = "SELECT password FROM accounts where username = ?";
 
         try {
             // Obtain the DataSource from JNDI
@@ -39,18 +42,13 @@ public class DeleteAccountAuth extends HttpServlet {
 
             ResultSet rs = pstmt.executeQuery();
 
-            if (!rs.next())
-                response.sendRedirect("/myApp/deleteAccount");
-            else{
-                sql = "DELETE FROM accounts WHERE username = ?";
-
-                pstmt = conn.prepareStatement(sql);
-                pstmt.setString(1, rName);
-                pstmt.executeUpdate();
-                
+            if (!rs.next() || !rs.getString("password").equals(rPwd))
+                response.sendRedirect("/myApp/login");
+            else
                 response.sendRedirect("/myApp/main");
-            }
-
+            
+            //TODO in the future this will check for encrypted passwords + create session
+            
         } catch (SQLException e) {
             out.println("<H1>SQL error.</H1>");
         } catch (NamingException e){
