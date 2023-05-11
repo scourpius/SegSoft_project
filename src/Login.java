@@ -20,8 +20,10 @@ public class Login extends HttpServlet {
         out.println("<BODY>");
         out.println("<form name='loginform'");
         out.println("action='http://localhost:8080/myApp/loginAuth' method='GET'>");
-        out.print("<input type='text' size=35 name='username'>");
-        out.print("<input type='password' size=35 name='password'>");
+        out.println("<label for='username'>Username:</label>");
+        out.print("<input type='text' size=35 name='username'><br>");
+        out.println("<label for='password'>Password:</label>");
+        out.print("<input type='password' size=35 name='password'><br>");
         out.println("<input type='hidden' value=redirect_url>");
         out.println("<input type='submit' value='Submit'>");
         out.println("</form>");

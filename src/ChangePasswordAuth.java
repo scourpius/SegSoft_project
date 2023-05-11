@@ -5,13 +5,16 @@ import javax.servlet.http.*;
 import src.Exceptions.*;
 import java.io.*;
 
-public class DeleteAccountAuth extends HttpServlet {
+public class ChangePasswordAuth extends HttpServlet {
     public void init() throws ServletException {
         super.init();
     }
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         String rName = request.getParameter("username");
+        String rPwd = request.getParameter("password");
+        String rPwd2 = request.getParameter("password2");
+
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
@@ -20,15 +23,16 @@ public class DeleteAccountAuth extends HttpServlet {
         out.println("</HEAD>");
         out.println("<BODY>");
 
-
         Authenticator auth = new AuthenticatorImpl();
 
         try {
-            auth.delete_account(rName);
+            auth.change_pwd(rName, rPwd, rPwd2);
             response.sendRedirect("/myApp/main");
             
-        } catch (UndefinedAccountException e) {
-            out.println("<H1> Account does not exist </H1>");
+        } catch (PasswordsDontMatchException e) {
+            out.println("<H1> Passwords don't match </H1>");
+        } catch (UndefinedAccountException e){
+            out.println("<H1> Username doesn't exist </H1>");
         } catch (Exception e) {
             out.println("<H1> Error </H1>");
         }

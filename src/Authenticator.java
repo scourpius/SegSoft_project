@@ -1,7 +1,6 @@
 package src;
 
 import src.Exceptions.*;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,7 +13,7 @@ public interface Authenticator {
     • precondition: pwd1 == pwd2
     • the account pwd must be stored in encrypted form
      */
-    void create_account(String name, String pwd1, String pwd2) throws Exception;
+    void create_account(String name, String pwd1, String pwd2) throws AccountExistsException, PasswordsDontMatchException, Exception;
 
     /*
     deletes an existing account object
@@ -25,7 +24,7 @@ public interface Authenticator {
     • the account must be locked (so no one will
     authenticate on the way)
      */
-    void delete_account(String name);
+    void delete_account(String name) throws UndefinedAccountException, Exception;
 
     //returns a clone (readonly) of an existing account object
     Account get_account(String name);
@@ -38,7 +37,7 @@ public interface Authenticator {
     • pwd1 == pwd2 (see note in comments on
     create_account)
  */
-    void change_pwd(String name, String pwd1, String pwd2) throws Exception;
+    void change_pwd(String name, String pwd1, String pwd2) throws UndefinedAccountException, PasswordsDontMatchException, Exception;
 
     /*
     authenticates the caller, given name and password
@@ -78,7 +77,7 @@ public interface Authenticator {
         operations that require authentication (e.g., if the app
         needs to know who is the authority requesting the op)
      */
-    Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response);
+    Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response) throws AuthenticationErrorException;
 
     String encrypt(String data) throws Exception;
 }

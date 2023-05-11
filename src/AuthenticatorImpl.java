@@ -1,7 +1,6 @@
 package src;
 
 import src.Exceptions.*;
-
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServlet;
@@ -53,20 +52,20 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
     }
 
     @Override
-    public void create_account(String name, String pwd1, String pwd2) throws Exception {
+    public void create_account(String name, String pwd1, String pwd2) throws AccountExistsException, PasswordsDontMatchException, Exception {
         if (!pwd1.equals(pwd2)) {
-            System.out.println("Passwords provided are not equal");
-            return;
+            throw new PasswordsDontMatchException();
         }
 
         for (Account a : accountList) {
             if (a.getUsername().equals(name)) {
                 System.out.println("Account already exists");
-                return;
+                throw new AccountExistsException();
             }
         }
 
         String encPass = encrypt(pwd1);
+
         try (Connection conn = connect()){
             String sql = "INSERT INTO ? VALUES(?,?)";
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -75,14 +74,14 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
             pstmt.setString(3, encPass);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new Exception();
         }
 
         accountList.add(new Account(name, pwd1));
     }
 
     @Override
-    public void delete_account(String name) {
+    public void delete_account(String name) throws UndefinedAccountException, Exception{
         Account x = null;
         for (Account a : accountList) {
             if (a.getUsername().equals(name)) {
@@ -92,8 +91,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         }
 
         if (x == null){
-            System.out.println("Account doesn't exist");
-            return;
+            throw new UndefinedAccountException();
         }
 
         try (Connection conn = connect()){
@@ -103,7 +101,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
             pstmt.setString(2, name);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new Exception();
         }
 
         accountList.remove(x);
@@ -133,10 +131,9 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
     }
 
     @Override
-    public void change_pwd(String name, String pwd1, String pwd2) throws Exception {
+    public void change_pwd(String name, String pwd1, String pwd2) throws UndefinedAccountException, PasswordsDontMatchException, Exception {
         if (!pwd1.equals(pwd2)) {
-            System.out.println("Passwords provided are not equal");
-            return;
+            throw new PasswordsDontMatchException();
         }
 
         Account x = null;
@@ -146,12 +143,13 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                 break;
             }
         }
+
         if (x == null) {
-            System.out.println("User doesn't exist");
-            return;
+            throw new UndefinedAccountException();
         }
 
         String encPass = encrypt(pwd1);
+        
         try (Connection conn = connect()){
             String sql = "UPDATE ? SET password = ? WHERE name=?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -160,8 +158,9 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
             pstmt.setString(3, name);
             pstmt.executeUpdate();
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new Exception();
         }
+
         x.change_pwd(encPass);
     }
 
@@ -171,13 +170,16 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
             if (a.getUsername().equals(name)){
                 if (a.isLocked())
                     throw new LockedAccountException();
+
                 String encPass = encrypt(pwd);
                 if (!encPass.equals(a.getPassword()))
                     throw new AuthenticationErrorException();
+                    
                 a.login();
                 return a;
             }
         }
+
         throw new UndefinedAccountException();
     }
 
@@ -190,7 +192,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
 
     //TODO: Finish this method
     @Override
-    public Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response) {
+    public Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response) throws AuthenticationErrorException{
         return null;
     }
 
