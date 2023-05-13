@@ -19,11 +19,15 @@ public class ListUsers extends HttpServlet {
             out.println("<HEAD>");
             out.println("</HEAD>");
             out.println("<BODY>");
+
+            out.println("<a href='http://localhost:8080/myApp/main'>");
+            out.println("<button>return</button>");
+            out.println("</a>");
             
             for (Account a : auth.userList()) {
                 out.println("<H2> Username: " + a.getUsername() + " Password: " + a.getPassword() + "</H2>");
             }
-            
+
             out.println("</BODY>");
             out.println("</HTML>");
     }

@@ -18,6 +18,9 @@ public class DeleteAccount extends HttpServlet {
         out.println("<HEAD>");
         out.println("</HEAD>");
         out.println("<BODY>");
+        out.println("<a href='http://localhost:8080/myApp/main'>");
+        out.println("<button>return</button>");
+        out.println("</a>");
         out.println("<form name='accountCreationForm'");
         out.println("action='http://localhost:8080/myApp/deleteAccountAuth' method='GET'>");
         out.println("<label for='username'>Username:</label>");

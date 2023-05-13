@@ -18,6 +18,9 @@ public class ChangePassword extends HttpServlet {
         out.println("<HEAD>");
         out.println("</HEAD>");
         out.println("<BODY>");
+        out.println("<a href='http://localhost:8080/myApp/main'>");
+        out.println("<button>return</button>");
+        out.println("</a>");
         out.println("<form name='passwordChangeForm'");
         out.println("action='http://localhost:8080/myApp/changePassword' method='GET'>");
         out.println("<label for='username'>Username:</label>");

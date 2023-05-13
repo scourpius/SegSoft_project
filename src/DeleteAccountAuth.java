@@ -33,6 +33,14 @@ public class DeleteAccountAuth extends HttpServlet {
             out.println("<H1> Error </H1>");
         }
 
+        out.println("<a href='http://localhost:8080/myApp/main'>");
+        out.println("<button>return to main page</button>");
+        out.println("</a>");
+
+        out.println("<a href='http://localhost:8080/myApp/deleteAccount'>");
+        out.println("<button>Try again</button>");
+        out.println("</a>");
+
         out.println("</BODY>");
         out.println("</HTML>");
     }

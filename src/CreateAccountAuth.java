@@ -29,7 +29,7 @@ public class CreateAccountAuth extends HttpServlet {
 
         try {
             auth.create_account(rName, rPwd, rPwd2);
-            out.println("<H1> Success </H1>");
+            response.sendRedirect("/myApp/main");
             
         } catch (AccountExistsException e) {
             out.println("<H1> Account name already exists </H1>");
@@ -38,6 +38,14 @@ public class CreateAccountAuth extends HttpServlet {
         } catch (Exception e) {
             out.println("<H1> Error </H1>");
         }
+
+        out.println("<a href='http://localhost:8080/myApp/main'>");
+        out.println("<button>return to main page</button>");
+        out.println("</a>");
+
+        out.println("<a href='http://localhost:8080/myApp/createAccount'>");
+        out.println("<button>Try again</button>");
+        out.println("</a>");
 
 
         out.println("</BODY>");
