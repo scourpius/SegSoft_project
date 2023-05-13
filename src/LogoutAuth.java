@@ -23,10 +23,14 @@ public class LogoutAuth extends HttpServlet {
 
 
         try {
+            HttpSession session = request.getSession(false);
+
+            if (session != null)
+                session.setAttribute("OP", "delete_account");
+
             authUser = auth.check_authenticated_request(request,response);
             auth.logout(authUser);
 
-            HttpSession session = request.getSession(false);
             if (session != null) session.invalidate();
 
             response.sendRedirect("/myApp/login");
