@@ -226,11 +226,6 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
 
         Account a = get_account(username);
 
-        System.out.println(a != null);
-        System.out.println(a.isLogged());
-        System.out.println(a.getPassword().equals(password));
-        System.out.println(!a.isLocked());
-
         if (a != null && a.isLogged() && a.getPassword().equals(password) && !a.isLocked()){
             String operation = (String) session.getAttribute("OP");
 
