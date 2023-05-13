@@ -38,6 +38,8 @@ public class DeleteAccountAuth extends HttpServlet {
             out.println("<H1> Account does not exist </H1>");
         } catch(AuthenticationErrorException e){
             out.println("<H1> Account not authenticated </H1>");
+        } catch (PermissionDeniedException e){
+            out.println("<H1> Permission Denied </H1>");
         } catch (Exception e) {
             out.println("<H1> Error </H1>");
         }

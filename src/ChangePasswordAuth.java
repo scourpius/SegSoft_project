@@ -46,7 +46,9 @@ public class ChangePasswordAuth extends HttpServlet {
             out.println("<H1> Account not authenticated </H1>");
         } catch (UndefinedAccountException e){
             out.println("<H1> Username doesn't exist </H1>");
-        } catch (Exception e) {
+        } catch (PermissionDeniedException e){
+            out.println("<H1> Permission Denied </H1>");
+        }catch (Exception e) {
             out.println("<H1> Error </H1>");
         }
 

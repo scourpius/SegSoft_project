@@ -22,7 +22,7 @@ public class ChangePassword extends HttpServlet {
         out.println("<button>return</button>");
         out.println("</a>");
         out.println("<form name='passwordChangeForm'");
-        out.println("action='http://localhost:8080/myApp/changePassword' method='GET'>");
+        out.println("action='http://localhost:8080/myApp/changePasswordAuth' method='GET'>");
         out.println("<label for='username'>Username:</label>");
         out.print("<input type='text' size=35 name='username'><br>");
         out.println("<label for='password'>Password:</label>");

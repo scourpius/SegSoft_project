@@ -80,7 +80,7 @@ public interface Authenticator {
         operations that require authentication (e.g., if the app
         needs to know who is the authority requesting the op)
      */
-    Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response) throws AuthenticationErrorException;
+    Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response) throws AuthenticationErrorException, PermissionDeniedException;
 
     List<Account> userList();
 }

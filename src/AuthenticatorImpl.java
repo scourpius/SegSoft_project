@@ -215,7 +215,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
     }
 
     @Override
-    public Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response) throws AuthenticationErrorException{
+    public Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response) throws AuthenticationErrorException, PermissionDeniedException{
         HttpSession session = request.getSession(false);
 
         if (session == null)
@@ -230,9 +230,9 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
             String operation = (String) session.getAttribute("OP");
 
             switch (operation){
-                case "change_pwd": if (!(session.getAttribute("name")).equals(username)) throw new AuthenticationErrorException();
-                case "create_account": if (!(username.equals("root"))) throw new AuthenticationErrorException();
-                case "delete_account": if (!(username.equals("root"))) throw new AuthenticationErrorException();
+                case "change_pwd": if (!(session.getAttribute("name")).equals(username)) throw new PermissionDeniedException();
+                case "create_account": if (!(username.equals("root"))) throw new PermissionDeniedException();
+                case "delete_account": if (!(username.equals("root"))) throw new PermissionDeniedException();
                 default: ;
             }
 
