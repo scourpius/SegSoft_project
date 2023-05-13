@@ -14,7 +14,7 @@ import java.util.List;
 
 public class AuthenticatorImpl extends HttpServlet implements Authenticator {
 
-    private final String databaseURL = "./accounts.db";
+    private final String databaseURL = "jdbc:sqlite:accounts.db";
     private static final String tableName = "Accounts";
 
     private static List<Account> accountList;
@@ -26,26 +26,32 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
 
     Key key = new SecretKeySpec(keyValue, ALGO);
 
-
-    public AuthenticatorImpl() {
+    public AuthenticatorImpl() {     
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }   
         try (Connection conn = connect()){
             conn.createStatement().execute("CREATE TABLE IF NOT EXISTS " + tableName + "(\n" +
-                    "name text PRIMARY KEY,\n" +
+                    "username text PRIMARY KEY,\n" +
                     "password text NOT NULL\n" +
                     ");");
 
             accountList = new ArrayList<>();
 
             ResultSet rs;
-            String sql = "SELECT * FROM ?";
-            PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, tableName);
-            rs = pstmt.executeQuery();
+            String sql = "SELECT * FROM " + tableName;
+            Statement stmt = conn.createStatement();
+            rs = stmt.executeQuery(sql);
+
             while (rs.next()){
-                String name = rs.getString("name");
+                String name = rs.getString("username");
                 String pwd = rs.getString("password");
                 accountList.add(new Account(name, pwd));
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -63,15 +69,15 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                 throw new AccountExistsException();
             }
         }
-
+        
         String encPass = encrypt(pwd1);
 
+
         try (Connection conn = connect()){
-            String sql = "INSERT INTO ? VALUES(?,?)";
+            String sql = "INSERT INTO " + tableName + " VALUES (?, ?)";
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, tableName);
-            pstmt.setString(2, name);
-            pstmt.setString(3, encPass);
+            pstmt.setString(1, name);
+            pstmt.setString(2, encPass);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new Exception();
@@ -207,7 +213,12 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         return null; //should never happen
     }
 
-    public String encrypt(String Data) throws Exception {
+    @Override
+    public List<Account> userList() {
+        return accountList;
+    }
+
+    private String encrypt(String Data) throws Exception {
         Cipher c = Cipher.getInstance(ALGO);
         c.init(Cipher.ENCRYPT_MODE, key);
         byte[] encVal = c.doFinal(Data.getBytes());
@@ -215,7 +226,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         getEncoder().encodeToString(encVal);
     }
 
-    public String decrypt(String encrypted) throws Exception {
+    private String decrypt(String encrypted) throws Exception {
         Cipher c = Cipher.getInstance(ALGO);
         c.init(Cipher.DECRYPT_MODE, key);
         byte[] decodedValue = java.util.Base64.

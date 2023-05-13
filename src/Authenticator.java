@@ -1,6 +1,9 @@
 package src;
 
 import src.Exceptions.*;
+
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -79,5 +82,5 @@ public interface Authenticator {
      */
     Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response) throws AuthenticationErrorException;
 
-    String encrypt(String data) throws Exception;
+    List<Account> userList();
 }

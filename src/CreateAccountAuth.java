@@ -29,7 +29,7 @@ public class CreateAccountAuth extends HttpServlet {
 
         try {
             auth.create_account(rName, rPwd, rPwd2);
-            response.sendRedirect("/myApp/main");
+            out.println("<H1> Success </H1>");
             
         } catch (AccountExistsException e) {
             out.println("<H1> Account name already exists </H1>");

@@ -12,6 +12,7 @@ public class MainPage extends HttpServlet {
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
             response.setContentType("text/html");
             PrintWriter out = response.getWriter();
+
             out.println("<HTML>");
             out.println("<HEAD>");
             out.println("</HEAD>");

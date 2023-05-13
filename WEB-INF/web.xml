@@ -76,6 +76,15 @@
         <url-pattern>/changePassword</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>ListUsers</servlet-name>
+        <servlet-class>src.ListUsers</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ListUsers</servlet-name>
+        <url-pattern>/listUsers</url-pattern>
+    </servlet-mapping>
+
 
     <classpath>
         <pathelement location="WEB-INF/lib/servlet.jar"/>
