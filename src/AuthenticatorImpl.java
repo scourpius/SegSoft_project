@@ -177,8 +177,8 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         try (Connection conn = connect()){
             String sql = "UPDATE " + tableName + " SET password = ? WHERE username = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, pwd1);
-            pstmt.setString(1, name);
+            pstmt.setString(1, encPass);
+            pstmt.setString(2, name);
 
             pstmt.executeUpdate();
         } catch (SQLException e) {
@@ -226,13 +226,18 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
 
         Account a = get_account(username);
 
+        System.out.println(a != null);
+        System.out.println(a.isLogged());
+        System.out.println(a.getPassword().equals(password));
+        System.out.println(!a.isLocked());
+
         if (a != null && a.isLogged() && a.getPassword().equals(password) && !a.isLocked()){
             String operation = (String) session.getAttribute("OP");
 
             switch (operation){
-                case "change_pwd": if (!(session.getAttribute("name")).equals(username)) throw new PermissionDeniedException();
-                case "create_account": if (!(username.equals("root"))) throw new PermissionDeniedException();
-                case "delete_account": if (!(username.equals("root"))) throw new PermissionDeniedException();
+                case "change_pwd": if (!((String)session.getAttribute("name")).equals(username)) throw new PermissionDeniedException(); break;
+                case "create_account": if (!(username.equals("root"))) throw new PermissionDeniedException(); break;
+                case "delete_account": if (!(username.equals("root"))) throw new PermissionDeniedException(); break;
                 default: ;
             }
 
