@@ -9,7 +9,7 @@ public class Account{
         this.username = username;
         this.password = password;
         this.logged_in = false;
-        this.locked = true; //?
+        this.locked = false;
     }
 
     public String getUsername() {

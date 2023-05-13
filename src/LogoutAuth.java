@@ -9,6 +9,9 @@ public class LogoutAuth extends HttpServlet {
     public void init() throws ServletException {
         super.init();
     }
+    
+    Authenticator auth = new AuthenticatorImpl();
+    Account authUser;
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         response.setContentType("text/html");
@@ -18,19 +21,23 @@ public class LogoutAuth extends HttpServlet {
         out.println("</HEAD>");
         out.println("<BODY>");
 
-        Authenticator auth = new AuthenticatorImpl();
 
-        /*try {
-            auth.logout();
+        try {
+            authUser = auth.check_authenticated_request(request,response);
+            auth.logout(authUser);
+
+            HttpSession session = request.getSession(false);
+            if (session != null) session.invalidate();
+
             response.sendRedirect("/myApp/login");
             
-        } catch (PasswordsDontMatchException e) {
-            out.println("<H1> Passwords don't match </H1>");
-        } catch (UndefinedAccountException e){
+        } catch (AlreadyAuthenticatedException e){
             out.println("<H1> Username doesn't exist </H1>");
+        } catch(AuthenticationErrorException e){
+            out.println("<H1> Account not authenticated </H1>");
         } catch (Exception e) {
             out.println("<H1> Error </H1>");
-        }*/
+        }
 
         out.println("<a href='http://localhost:8080/myApp/main'>");
         out.println("<button>return to main page</button>");

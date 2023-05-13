@@ -6,6 +6,8 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
 import java.security.Key;
 import java.sql.*;
 import java.util.ArrayList;
@@ -52,7 +54,13 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                 accountList.add(new Account(name, pwd));
             }
 
-        } catch (SQLException e) {
+            sql = "INSERT OR IGNORE INTO " + tableName + " VALUES (?, ?)";
+            PreparedStatement pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, "root");
+            pstmt.setString(2, encrypt("1234"));
+            pstmt.executeUpdate();
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -194,10 +202,29 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         acc.logout();
     }
 
-    //TODO: Finish this method
     @Override
     public Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response) throws AuthenticationErrorException{
-        return null;
+        HttpSession session = request.getSession(false);
+
+        if (session == null)
+            throw new AuthenticationErrorException();
+        
+        String username = (String) session.getAttribute("USER");
+        String password = (String) session.getAttribute("PWD");
+
+        Account a = get_account(username);
+
+        System.out.println(a.isLogged());
+        System.out.println(a.isLocked());
+        System.out.println(password);
+        System.out.println(a.getPassword());
+
+
+
+        if (a != null && a.isLogged() && a.getPassword().equals(password) && !a.isLocked())
+            return a;
+
+        throw new AuthenticationErrorException();
     }
 
     private Connection connect() {

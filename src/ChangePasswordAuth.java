@@ -10,6 +10,10 @@ public class ChangePasswordAuth extends HttpServlet {
         super.init();
     }
 
+    Authenticator auth = new AuthenticatorImpl();
+    Account authUser;
+
+
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         String rName = request.getParameter("username");
         String rPwd = request.getParameter("password");
@@ -26,11 +30,15 @@ public class ChangePasswordAuth extends HttpServlet {
         Authenticator auth = new AuthenticatorImpl();
 
         try {
+            authUser = auth.check_authenticated_request(request, response);
+
             auth.change_pwd(rName, rPwd, rPwd2);
             response.sendRedirect("/myApp/main");
             
         } catch (PasswordsDontMatchException e) {
             out.println("<H1> Passwords don't match </H1>");
+        } catch(AuthenticationErrorException e){
+            out.println("<H1> Account not authenticated </H1>");
         } catch (UndefinedAccountException e){
             out.println("<H1> Username doesn't exist </H1>");
         } catch (Exception e) {

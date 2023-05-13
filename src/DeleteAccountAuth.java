@@ -10,6 +10,9 @@ public class DeleteAccountAuth extends HttpServlet {
         super.init();
     }
 
+    Authenticator auth = new AuthenticatorImpl();
+    Account authUser;
+
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         String rName = request.getParameter("username");
 
@@ -20,15 +23,16 @@ public class DeleteAccountAuth extends HttpServlet {
         out.println("</HEAD>");
         out.println("<BODY>");
 
-
-        Authenticator auth = new AuthenticatorImpl();
-
         try {
+            authUser = auth.check_authenticated_request(request, response);
+            
             auth.delete_account(rName);
             response.sendRedirect("/myApp/main");
             
         } catch (UndefinedAccountException e) {
             out.println("<H1> Account does not exist </H1>");
+        } catch(AuthenticationErrorException e){
+            out.println("<H1> Account not authenticated </H1>");
         } catch (Exception e) {
             out.println("<H1> Error </H1>");
         }

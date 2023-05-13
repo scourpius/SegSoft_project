@@ -29,7 +29,7 @@ public class MainPage extends HttpServlet {
             out.println("<a href='http://localhost:8080/myApp/listUsers'>");
             out.println("<button>List Users</button>");
             out.println("</a><br><br>");
-            out.println("<a href='http://localhost:8080/myApp/logout'>");
+            out.println("<a href='http://localhost:8080/myApp/logoutAuth'>");
             out.println("<button>Logout</button>");
             out.println("</a>");
             out.println("</BODY>");

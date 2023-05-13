@@ -10,6 +10,9 @@ public class LoginAuth extends HttpServlet {
         super.init();
     }
 
+    Authenticator auth = new AuthenticatorImpl();
+    Account authUser;
+
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         String rName = request.getParameter("username");
         String rPwd = request.getParameter("password");
@@ -21,10 +24,13 @@ public class LoginAuth extends HttpServlet {
         out.println("</HEAD>");
         out.println("<BODY>");
 
-        Authenticator auth = new AuthenticatorImpl();
-
         try {
-            auth.authenticate_user(rName, rPwd);
+            authUser = auth.authenticate_user(rName, rPwd);
+
+            HttpSession session = request.getSession(true);
+            session.setAttribute("USER", authUser.getUsername());
+            session.setAttribute("PWD", authUser.getPassword());
+
             response.sendRedirect("/myApp/main");
             
         } catch (LockedAccountException e) {
