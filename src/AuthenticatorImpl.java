@@ -30,9 +30,9 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }   
+            
+        }  
+
         try (Connection conn = connect()){
             conn.createStatement().execute("CREATE TABLE IF NOT EXISTS " + tableName + "(\n" +
                     "username text PRIMARY KEY,\n" +
@@ -72,7 +72,6 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         
         String encPass = encrypt(pwd1);
 
-
         try (Connection conn = connect()){
             String sql = "INSERT INTO " + tableName + " VALUES (?, ?)";
             PreparedStatement pstmt = conn.prepareStatement(sql);
@@ -101,10 +100,9 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         }
 
         try (Connection conn = connect()){
-            String sql = "DELETE FROM ? WHERE name=?";
+            String sql = "DELETE FROM " + tableName + " WHERE username = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, tableName);
-            pstmt.setString(2, name);
+            pstmt.setString(1, name);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new Exception();
@@ -132,7 +130,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                 return newA;
             }
         }
-        System.out.println("Account doesn't exist");
+
         return null;
     }
 
@@ -157,11 +155,11 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         String encPass = encrypt(pwd1);
         
         try (Connection conn = connect()){
-            String sql = "UPDATE ? SET password = ? WHERE name=?";
+            String sql = "UPDATE " + tableName + " SET password = ? WHERE username = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, tableName);
-            pstmt.setString(2, encPass);
-            pstmt.setString(3, name);
+            pstmt.setString(1, pwd1);
+            pstmt.setString(1, name);
+
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new Exception();

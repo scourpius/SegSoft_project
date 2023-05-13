@@ -23,10 +23,13 @@ public class MainPage extends HttpServlet {
             out.println("<a href='http://localhost:8080/myApp/deleteAccount'>");
             out.println("<button>Delete Account</button>");
             out.println("</a><br><br>");
+            out.println("<a href='http://localhost:8080/myApp/changePassword'>");
+            out.println("<button>Change Password</button>");
+            out.println("</a><br><br>");
             out.println("<a href='http://localhost:8080/myApp/listUsers'>");
             out.println("<button>List Users</button>");
             out.println("</a><br><br>");
-            out.println("<a href='http://localhost:8080/myApp/listUsers'>");
+            out.println("<a href='http://localhost:8080/myApp/logout'>");
             out.println("<button>Logout</button>");
             out.println("</a>");
             out.println("</BODY>");

@@ -77,6 +77,15 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>ChangePasswordAuth</servlet-name>
+        <servlet-class>src.ChangePasswordAuth</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ChangePasswordAuth</servlet-name>
+        <url-pattern>/changePasswordAuth</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>ListUsers</servlet-name>
         <servlet-class>src.ListUsers</servlet-class>
     </servlet>
@@ -85,9 +94,14 @@
         <url-pattern>/listUsers</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>LogoutAuth</servlet-name>
+        <servlet-class>src.LogoutAuth</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LogoutAuth</servlet-name>
+        <url-pattern>/logoutAuth</url-pattern>
+    </servlet-mapping>
 
-    <classpath>
-        <pathelement location="WEB-INF/lib/servlet.jar"/>
-    </classpath>
 </web-app>
 
