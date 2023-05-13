@@ -10,7 +10,7 @@ public class ChangePasswordAuth extends HttpServlet {
         super.init();
     }
 
-    Authenticator auth = new AuthenticatorImpl();
+    Authenticator auth = AuthenticatorImpl.getInstance();
     Account authUser;
 
 
@@ -26,8 +26,6 @@ public class ChangePasswordAuth extends HttpServlet {
         out.println("<HEAD>");
         out.println("</HEAD>");
         out.println("<BODY>");
-
-        Authenticator auth = new AuthenticatorImpl();
 
         try {
             authUser = auth.check_authenticated_request(request, response);

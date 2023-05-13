@@ -9,11 +9,11 @@ public class ListUsers extends HttpServlet {
         super.init();
     }
 
+    Authenticator auth = AuthenticatorImpl.getInstance();
+
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
             response.setContentType("text/html");
             PrintWriter out = response.getWriter();
-
-            Authenticator auth = new AuthenticatorImpl();
 
             out.println("<HTML>");
             out.println("<HEAD>");

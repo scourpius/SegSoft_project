@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-
 import java.security.Key;
 import java.sql.*;
 import java.util.ArrayList;
@@ -28,7 +27,9 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
 
     Key key = new SecretKeySpec(keyValue, ALGO);
 
-    public AuthenticatorImpl() {     
+    private static AuthenticatorImpl instance;
+
+    private AuthenticatorImpl() {     
         try {
             Class.forName("org.sqlite.JDBC");
         } catch (ClassNotFoundException e) {
@@ -63,6 +64,14 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    public static synchronized AuthenticatorImpl getInstance() {
+        if (instance == null) {
+            instance = new AuthenticatorImpl();
+        }
+
+        return instance;
     }
 
     @Override
@@ -213,13 +222,6 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         String password = (String) session.getAttribute("PWD");
 
         Account a = get_account(username);
-
-        System.out.println(a.isLogged());
-        System.out.println(a.isLocked());
-        System.out.println(password);
-        System.out.println(a.getPassword());
-
-
 
         if (a != null && a.isLogged() && a.getPassword().equals(password) && !a.isLocked())
             return a;

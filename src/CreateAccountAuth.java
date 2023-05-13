@@ -10,7 +10,7 @@ public class CreateAccountAuth extends HttpServlet {
         super.init();
     }
 
-    Authenticator auth = new AuthenticatorImpl();
+    Authenticator auth = AuthenticatorImpl.getInstance();
     Account authUser;
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
@@ -24,8 +24,6 @@ public class CreateAccountAuth extends HttpServlet {
         out.println("<HEAD>");
         out.println("</HEAD>");
         out.println("<BODY>");
-
-        Authenticator auth = new AuthenticatorImpl();
 
         try {
             authUser = auth.check_authenticated_request(request, response);
