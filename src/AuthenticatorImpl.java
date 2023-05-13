@@ -61,6 +61,9 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
             pstmt.setString(2, encrypt("1234"));
             pstmt.executeUpdate();
 
+            if (get_account("root") == null)
+                accountList.add(new Account("root", encrypt("1234")));
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -99,7 +102,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
             throw new Exception();
         }
 
-        accountList.add(new Account(name, pwd1));
+        accountList.add(new Account(name, encPass));
     }
 
     @Override
@@ -223,8 +226,18 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
 
         Account a = get_account(username);
 
-        if (a != null && a.isLogged() && a.getPassword().equals(password) && !a.isLocked())
+        if (a != null && a.isLogged() && a.getPassword().equals(password) && !a.isLocked()){
+            String operation = (String) session.getAttribute("OP");
+
+            switch (operation){
+                case "change_pwd": if (!(session.getAttribute("name")).equals(username)) throw new AuthenticationErrorException();
+                case "create_account": if (!(username.equals("root"))) throw new AuthenticationErrorException();
+                case "delete_account": if (!(username.equals("root"))) throw new AuthenticationErrorException();
+                default: ;
+            }
+
             return a;
+        }
 
         throw new AuthenticationErrorException();
     }

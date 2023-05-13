@@ -24,6 +24,11 @@ public class DeleteAccountAuth extends HttpServlet {
         out.println("<BODY>");
 
         try {
+            HttpSession session = request.getSession(false);
+
+            if (session != null)
+                session.setAttribute("OP", "delete_account");
+
             authUser = auth.check_authenticated_request(request, response);
             
             auth.delete_account(rName);

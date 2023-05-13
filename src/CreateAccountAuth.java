@@ -26,6 +26,11 @@ public class CreateAccountAuth extends HttpServlet {
         out.println("<BODY>");
 
         try {
+            HttpSession session = request.getSession(false);
+
+            if (session != null)
+                session.setAttribute("OP", "create_account");
+
             authUser = auth.check_authenticated_request(request, response);
 
             auth.create_account(rName, rPwd, rPwd2);

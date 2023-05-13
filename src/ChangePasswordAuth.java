@@ -28,6 +28,13 @@ public class ChangePasswordAuth extends HttpServlet {
         out.println("<BODY>");
 
         try {
+            HttpSession session = request.getSession(false);
+
+            if (session != null){
+                session.setAttribute("OP", "change_pwd");
+                session.setAttribute("name", rName);
+            }
+
             authUser = auth.check_authenticated_request(request, response);
 
             auth.change_pwd(rName, rPwd, rPwd2);

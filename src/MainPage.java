@@ -32,6 +32,10 @@ public class MainPage extends HttpServlet {
             out.println("<a href='http://localhost:8080/myApp/logoutAuth'>");
             out.println("<button>Logout</button>");
             out.println("</a>");
+            out.println("</a><br><br>");
+            out.println("<a href='http://localhost:8080/myApp/login'>");
+            out.println("<button>Login</button>");
+            out.println("</a>");
             out.println("</BODY>");
             out.println("</HTML>");
     }
