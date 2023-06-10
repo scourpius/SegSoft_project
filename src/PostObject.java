@@ -1,6 +1,8 @@
 package src;
 
-public class PostObject {
+import src.AccessController.Resource;
+
+public class PostObject implements Resource {
 
     private int post_id;
     private int page_id;

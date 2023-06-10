@@ -7,8 +7,19 @@ import src.AuthenticatorImpl;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.DESKeySpec;
+import java.security.MessageDigest;
+import java.util.Base64;
+import java.util.UUID;
+
+
 public class AccessController {
+    private static String SECRET_KEY = "SegSoftRules";
     List<Role> roleList = new ArrayList<>();
+    List<Capability> capabilityList = new ArrayList<>();
 
     public Role newRole (String roleId){
         Role role = new Role(roleId);
@@ -38,12 +49,40 @@ public class AccessController {
     }
 
     public Capability makeKey (Role role){
-        // TODO
-        return null;
+        String token = generateUniqueToken();
+        String encryptedToken = encryptToken(token);
+        Capability cap = new Capability(encryptedToken, role);
+        capabilityList.add(cap);
+        return cap;
     }
 
-    public void checkPermission (Capability cap, Resource res, Operation op){
+    public boolean checkPermission (Capability cap, Resource res, Operation op){
         // TODO
-        return;
+        return false;
+    }
+
+
+
+    private String generateUniqueToken(){
+        return UUID.randomUUID().toString();
+    }
+
+    private String encryptToken (String token){
+        try {
+            DESKeySpec keySpec = new DESKeySpec(SECRET_KEY.getBytes());
+            SecretKeyFactory keyFactory = SecretKeyFactory.getInstance("DES");
+            SecretKey secretKey = keyFactory.generateSecret(keySpec);
+
+            Cipher cipher = Cipher.getInstance("DES");
+            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+
+            byte[] encryptedBytes = cipher.doFinal(token.getBytes());
+
+            return Base64.getEncoder().encodeToString(encryptedBytes);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }
