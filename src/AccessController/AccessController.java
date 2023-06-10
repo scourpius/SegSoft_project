@@ -11,7 +11,6 @@ import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
-import java.security.MessageDigest;
 import java.util.Base64;
 import java.util.UUID;
 
