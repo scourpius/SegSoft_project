@@ -1,8 +1,6 @@
 package src;
 
-import src.AccessController.Resource;
-
-public class PageObject implements Resource {
+public class PageObject {
 
     private int page_id;
     private String user_id;

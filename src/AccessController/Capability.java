@@ -1,19 +1,15 @@
 package src.AccessController;
 
+import java.util.List;
+
 public class Capability {
     private String token;
-    private Role role;
 
-    public Capability(String encryptedToken, Role role) {
+    public Capability(String encryptedToken) {
         this.token = encryptedToken;
-        this.role = role;
     }
 
     public String getToken() {
         return token;
-    }
-
-    public Role getRole() {
-        return role;
     }
 }

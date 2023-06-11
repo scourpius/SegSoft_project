@@ -45,8 +45,6 @@ public class SN {
     }
 
     public void DBDrop() throws SQLException {
-    String sqlcmd;
-    ResultSet rs   ;
     doSQL(stmt,"drop table pagekey");
     doSQL(stmt,"drop table postkey");
     doSQL(stmt,"drop table page;");
@@ -57,8 +55,6 @@ public class SN {
     }
 
     public void DBBuild() throws SQLException {
-    String sqlcmd;
-    ResultSet rs   ;
     
     doSQL(stmt,"CREATE TABLE pagekey(page_id integer);");
     doSQL(stmt,"insert into pagekey values(1);");

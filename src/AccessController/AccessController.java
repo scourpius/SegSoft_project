@@ -3,6 +3,8 @@ package src.AccessController;
 import src.Account;
 import src.Authenticator;
 import src.AuthenticatorImpl;
+import src.PageObject;
+import src.SN;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +19,8 @@ import java.util.UUID;
 
 public class AccessController {
     private static String SECRET_KEY = "SegSoftRules";
+
     List<Role> roleList = new ArrayList<>();
-    List<Capability> capabilityList = new ArrayList<>();
 
     public Role newRole (String roleId){
         Role role = new Role(roleId);
@@ -48,19 +50,21 @@ public class AccessController {
     }
 
     public Capability makeKey (Role role){
+        //TODO need to save the token somewhere for comparison later
+
         String token = generateUniqueToken();
         String encryptedToken = encryptToken(token);
-        Capability cap = new Capability(encryptedToken, role);
-        capabilityList.add(cap);
+
+        Capability cap = new Capability(encryptedToken);
+
         return cap;
     }
 
     public boolean checkPermission (Capability cap, Resource res, Operation op){
-        // TODO
+        //TODO
+
         return false;
     }
-
-
 
     private String generateUniqueToken(){
         return UUID.randomUUID().toString();
