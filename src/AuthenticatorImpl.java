@@ -1,5 +1,6 @@
 package src;
 
+import src.AccessController.Role;
 import src.Exceptions.*;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -39,6 +40,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         try (Connection conn = connect()){
             conn.createStatement().execute("CREATE TABLE IF NOT EXISTS " + tableName + "(\n" +
                     "username text PRIMARY KEY,\n" +
+                    "role text NOT NULL,\n" +
                     "password text NOT NULL\n" +
                     ");");
 
@@ -52,7 +54,8 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
             while (rs.next()){
                 String name = rs.getString("username");
                 String pwd = rs.getString("password");
-                accountList.add(new Account(name, pwd));
+                Role role = Role.valueOf(rs.getString("role"));
+                accountList.add(new Account(name, pwd, role));
             }
 
             sql = "INSERT OR IGNORE INTO " + tableName + " VALUES (?, ?)";
@@ -62,7 +65,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
             pstmt.executeUpdate();
 
             if (get_account("root") == null)
-                accountList.add(new Account("root", encrypt("1234")));
+                accountList.add(new Account("root", encrypt("1234"), Role.Admin));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,7 +105,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
             throw new Exception();
         }
 
-        accountList.add(new Account(name, encPass));
+        accountList.add(new Account(name, encPass, Role.User));
     }
 
     @Override
@@ -135,7 +138,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
     public Account get_account(String name) {
         for (Account a : accountList) {
             if (a.getUsername().equals(name)) {
-                Account newA = new Account(name, a.getPassword());
+                Account newA = new Account(name, a.getPassword(), a.getRole());
 
                 if (a.isLogged())
                     newA.login();

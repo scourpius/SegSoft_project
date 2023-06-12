@@ -1,15 +1,19 @@
 package src;
 
+import src.AccessController.Role;
+
 public class Account{
 
     private String username, password;
     private boolean logged_in, locked;
+    private Role role;
 
-    public Account(String username, String password){
+    public Account(String username, String password, Role role){
         this.username = username;
         this.password = password;
         this.logged_in = false;
         this.locked = false;
+        this.role = role;
     }
 
     public String getUsername() {
@@ -46,5 +50,13 @@ public class Account{
 
     public void change_pwd(String newPwd) {
         this.password = newPwd;
+    }
+
+    public Role getRole(){
+        return this.role;
+    }
+
+    public void changeRole(Role role){
+        this.role = role;
     }
 }
