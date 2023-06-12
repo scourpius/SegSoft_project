@@ -1,12 +1,5 @@
 package src.AccessController;
 
-import src.Account;
-import src.Authenticator;
-import src.AuthenticatorImpl;
-import src.PageObject;
-import src.SN;
-
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.crypto.Cipher;
@@ -14,54 +7,94 @@ import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.DESKeySpec;
 import java.util.Base64;
+import java.util.LinkedList;
 import java.util.UUID;
 
 
 public class AccessController {
     private static String SECRET_KEY = "SegSoftRules";
 
-    List<Role> roleList = new ArrayList<>();
+    private String currToken;
 
-    public Role newRole (String roleId){
-        Role role = new Role(roleId);
-        roleList.add(role);
-        return role;
-    }
+    List<Permission> userPermissions = new LinkedList<>();
+    List<Permission> adminPermissions = new LinkedList<>();
 
-    public void setRole (Account user, Role role){
-        role.addUser(user);
-    }
+    public AccessController() {
+        for (Operation op : Operation.values()) {
+            Permission temp;
+            switch (op){
+                case access:
+                    temp = new Permission(Resource.Post, op);
+                    userPermissions.add(temp);
+                    adminPermissions.add(temp);
+                    temp = new Permission(Resource.Page, op);
+                    userPermissions.add(temp);
+                    adminPermissions.add(temp);
+                    break;
 
-    public List<Role> getRoles (Account user){
-        List<Role> roles = new ArrayList<>();
-        for (Role r : roleList){
-            if (r.hasUser(user))
-                roles.add(r);
+                case delete:
+                case create:
+                    temp = new Permission(Resource.Post, op);
+                    userPermissions.add(temp);
+                    adminPermissions.add(temp);
+                    temp = new Permission(Resource.Page, op);
+                    adminPermissions.add(temp);
+                    break;
+
+                case submit_follow:
+                case authorize_follow:
+                    temp = new Permission(Resource.Page, op);
+                    userPermissions.add(temp);
+                    adminPermissions.add(temp);
+                    break;
+
+                case like:
+                    temp = new Permission(Resource.Post, op);
+                    userPermissions.add(temp);
+                    adminPermissions.add(temp);
+                    break;
+
+                default:
+                break;
+            }
         }
-        return roles;
     }
 
     public void grantPermission (Role role, Resource res, Operation op){
-        // TODO
+        if (role == Role.Admin)
+            adminPermissions.add(new Permission(res, op));
+        else
+            userPermissions.add(new Permission(res, op));
     }
 
     public void revokePermission (Role role, Resource res, Operation op){
-        // TODO
+        if (role == Role.Admin)
+            adminPermissions.remove(new Permission(res, op));
+        else
+            userPermissions.remove(new Permission(res, op));
     }
 
     public Capability makeKey (Role role){
-        //TODO need to save the token somewhere for comparison later
-
         String token = generateUniqueToken();
         String encryptedToken = encryptToken(token);
+        currToken = encryptedToken;
 
-        Capability cap = new Capability(encryptedToken);
+        List<Permission> permissions = role == Role.Admin ? adminPermissions : userPermissions;
+
+        Capability cap = new Capability(encryptedToken, permissions);
 
         return cap;
     }
 
     public boolean checkPermission (Capability cap, Resource res, Operation op){
-        //TODO
+        if (cap.getToken().equals(currToken)){
+            List<Permission> permissions = cap.getPermissions();
+            Permission aux = new Permission(res, op);
+
+            return permissions.contains(aux);
+        }else{
+            //TODO create new token
+        }
 
         return false;
     }

@@ -1,15 +1,12 @@
 package src.AccessController;
 
-enum Operation {
-    access_page,
-    create_page,
-    delete_page,
+public enum Operation {
+    access,
+    create,
+    delete,
     submit_follow,
     authorize_follow,
-    access_post,
-    create_post,
-    delete_post,
-    like_post
+    like
 }
 
 
