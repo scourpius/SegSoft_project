@@ -39,9 +39,9 @@ public class DeletePostAuth extends HttpServlet {
             out.println("<H1> Account not authenticated </H1>");
         } catch (PermissionDeniedException e){
             out.println("<H1> Permission Denied </H1>");
-        } catch (PageDoesNotExistException e) {
-            out.println("<H1> Page does not exist </H1>");
-        }catch (Exception e) {
+        } catch (PostDoesNotExistException e) {
+            out.println("<H1> Post does not exist </H1>");
+        } catch (Exception e) {
             out.println("<H1> Error </H1>");
         }
 
