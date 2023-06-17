@@ -103,5 +103,76 @@
         <url-pattern>/logoutAuth</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>ListPages</servlet-name>
+        <servlet-class>src.ListPages</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ListPages</servlet-name>
+        <url-pattern>/listPages</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CreatePage</servlet-name>
+        <servlet-class>src.CreatePage</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CreatePage</servlet-name>
+        <url-pattern>/createPage</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DeletePage</servlet-name>
+        <servlet-class>src.DeletePage</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeletePage</servlet-name>
+        <url-pattern>/deletePage</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>CreatePost</servlet-name>
+        <servlet-class>src.CreatePost</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CreatePost</servlet-name>
+        <url-pattern>/createPost</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>DeletePost</servlet-name>
+        <servlet-class>src.DeletePost</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeletePost</servlet-name>
+        <url-pattern>/deletePost</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>FollowPage</servlet-name>
+        <servlet-class>src.FollowPage</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>FollowPage</servlet-name>
+        <url-pattern>/followPage</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AuthorizeFollow</servlet-name>
+        <servlet-class>src.AuthorizeFollow</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AuthorizeFollow</servlet-name>
+        <url-pattern>/authorizeFollow</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>LikeResource</servlet-name>
+        <servlet-class>src.LikeResource</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>LikeResource</servlet-name>
+        <url-pattern>/likeResource</url-pattern>
+    </servlet-mapping>
 </web-app>
 

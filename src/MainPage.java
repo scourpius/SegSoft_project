@@ -35,7 +35,28 @@ public class MainPage extends HttpServlet {
             out.println("</a><br><br>");
             out.println("<a href='http://localhost:8080/myApp/login'>");
             out.println("<button>Login</button>");
-            out.println("</a>");
+            out.println("</a><br><br>");
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                    out.println("<a href='http://localhost:8080/myApp/listPages'>");
+                    out.println("<button>List Pages</button>");
+                    out.println("</a><br><br>");
+                    out.println("<a href='http://localhost:8080/myApp/createPage'>");
+                    out.println("<button>Create Page (admin only)</button>");
+                    out.println("</a><br><br>");
+                    out.println("<a href='http://localhost:8080/myApp/deletePage'>");
+                    out.println("<button>Delete Page (admin only)</button>");
+                    out.println("</a><br><br>");
+                    out.println("<a href='http://localhost:8080/myApp/createPost'>");
+                    out.println("<button>Create Post</button>");
+                    out.println("</a><br><br>");
+                    out.println("<a href='http://localhost:8080/myApp/deletePost'>");
+                    out.println("<button>Delete Post</button>");
+                    out.println("</a><br><br>");
+                    out.println("<a href='http://localhost:8080/myApp/createPage'>");
+                    out.println("<button></button>");
+                    out.println("</a><br><br>");
+            }
             out.println("</BODY>");
             out.println("</HTML>");
     }

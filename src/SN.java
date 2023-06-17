@@ -56,42 +56,42 @@ public class SN {
 
     public void DBBuild() throws SQLException {
     
-    doSQL(stmt,"CREATE TABLE pagekey(page_id integer);");
+    doSQL(stmt,"CREATE TABLE IF NOT EXISTS pagekey(page_id integer);");
     doSQL(stmt,"insert into pagekey values(1);");
     //System.out.println("pagekey created.");
 
-    doSQL(stmt,"CREATE TABLE postkey(post_id integer);");
+    doSQL(stmt,"CREATE TABLE IF NOT EXISTS postkey(post_id integer);");
     doSQL(stmt,"insert into postkey values(1);");
     //System.out.println("postkey created.");
 
-    doSQL(stmt,"CREATE TABLE page("+
+    doSQL(stmt,"CREATE TABLE IF NOT EXISTS page("+
 	"page_id integer," +
 	"user_id text," +
 	"email text," +
 	"page_title text," +
 	  "page_pic text);");
-    doSQL(stmt,"CREATE UNIQUE INDEX idx_page_page_id on page(page_id)");
+    doSQL(stmt,"CREATE UNIQUE INDEX IF NOT EXISTS idx_page_page_id on page(page_id)");
     //System.out.println("page created.");
 
-     doSQL(stmt,"CREATE TABLE follower("+
+     doSQL(stmt,"CREATE TABLE IF NOT EXISTS follower("+
 	"page_ids integer," +
 	"page_idd integer," +
 	"status text)");
-     doSQL(stmt,"CREATE UNIQUE INDEX idx_follower on follower(page_ids,page_idd)");
+     doSQL(stmt,"CREATE UNIQUE INDEX IF NOT EXISTS idx_follower on follower(page_ids,page_idd)");
      //System.out.println("follower created.");
    
-     doSQL(stmt,"CREATE TABLE post(" +
+     doSQL(stmt,"CREATE TABLE IF NOT EXISTS post(" +
 	"post_id integer," +
 	"page_id integer," +
 	"post_date text," +
 	  "post_text text)");
-     doSQL(stmt,"CREATE UNIQUE INDEX idx_post_post_id on post(post_id)");
+     doSQL(stmt,"CREATE UNIQUE INDEX IF NOT EXISTS idx_post_post_id on post(post_id)");
      //System.out.println("post created.");
 
-     doSQL(stmt,"CREATE TABLE likes(" +
+     doSQL(stmt,"CREATE TABLE IF NOT EXISTS likes(" +
 	"post_id integer," +
 	"page_id integer)");
-     doSQL(stmt,"CREATE UNIQUE INDEX idx_likes_id on likes(post_id, page_id)");
+     doSQL(stmt,"CREATE UNIQUE INDEX IF NOT EXISTS idx_likes_id on likes(post_id, page_id)");
      //System.out.println("likes created.");
      }
 
@@ -209,7 +209,7 @@ public class SN {
     public void updatePage(PageObject p)
     throws SQLException{
 	stmt.execute("update page set "+
-		     "user_id = "+q(p.getUserId())+","+
+		     "user_id = "+q(p.getUserID())+","+
 		     "email = "+q(p.getEmail())+","+
 		     "page_title = "+q(p.getPageTitle())+","+
 		     "page_pic = "+q(p.getPagePic())+" where page_id="+p.getPageId());

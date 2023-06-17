@@ -1,5 +1,7 @@
 package src;
 
+import java.util.ArrayList;
+
 public class PageObject {
 
     private int page_id;
@@ -7,6 +9,7 @@ public class PageObject {
     private String email;
     private String page_title;
     private String page_pic;
+    private ArrayList<PostObject> posts;
     
     public PageObject(int _page_id, String _user_id, String _email, String _page_title, String _page_pic)
     {
@@ -15,6 +18,7 @@ public class PageObject {
 	email = _email;
 	page_title = _page_title;
 	page_pic = _page_pic;
+    posts = new ArrayList<>();
     }
 
     public int getPageId()
@@ -22,7 +26,7 @@ public class PageObject {
 	return page_id;
     }
 
-    public String getUserId()
+    public String getUserID()
     {
 	return user_id;
     }
@@ -61,4 +65,14 @@ public class PageObject {
     {
 	page_pic = _page_pic ;
     }
+
+    public void addPost(PostObject post) {
+        posts.add(post);
+    }
+
+    public ArrayList<PostObject> getPosts() {
+        return posts;
+    }
+
+    public void removePost (PostObject post) { posts.remove(post);}
 }

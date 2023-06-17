@@ -1,6 +1,6 @@
 package src;
 
-import src.AccessController.Role;
+import src.AccessController.*;
 import src.Exceptions.*;
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;
@@ -19,6 +19,8 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
     private final String databaseURL = "jdbc:sqlite:accounts.db";
     private static final String tableName = "Accounts";
 
+    private SN network;
+
     private static List<Account> accountList;
 
     private static final String ALGO = "AES";
@@ -27,6 +29,8 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                     'o', 'c', 'k','s', '!', '!', 'd', 'i' };
 
     Key key = new SecretKeySpec(keyValue, ALGO);
+
+    private AccessController accessController;
 
     private static AuthenticatorImpl instance;
 
@@ -45,6 +49,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                     ");");
 
             accountList = new ArrayList<>();
+            accessController = new AccessController();
 
             ResultSet rs;
             String sql = "SELECT * FROM " + tableName;
@@ -66,6 +71,16 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
 
             if (get_account("root") == null)
                 accountList.add(new Account("root", encrypt("1234"), Role.Admin));
+
+            network = new SN();
+            network.DBBuild();
+            for (PageObject page : network.getAllPages()){
+                for (Account acc : accountList)
+                    if (acc.getUsername().equals(page.getUserID())) {
+                        acc.addPage(page);
+                        break;
+                    }
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -135,25 +150,11 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
     }
 
     @Override
-    public Account get_account(String name) {
+    public Account get_account(String name) throws CloneNotSupportedException {
         for (Account a : accountList) {
-            if (a.getUsername().equals(name)) {
-                Account newA = new Account(name, a.getPassword(), a.getRole());
-
-                if (a.isLogged())
-                    newA.login();
-                else
-                    newA.logout();
-
-                if (a.isLocked())
-                    newA.lock();
-                else
-                    newA.unlock();
-
-                return newA;
-            }
+            if (a.getUsername().equals(name))
+                return (Account) a.clone();
         }
-
         return null;
     }
 
@@ -214,11 +215,66 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
     public void logout(Account acc) throws AlreadyAuthenticatedException {
         if (!acc.isLogged())
             throw new AlreadyAuthenticatedException();
+        for (Account a : accountList)
+            if (a.getUsername().equals(acc.getUsername())) {
+                a.logout();
+                break;
+            }
         acc.logout();
     }
 
     @Override
-    public Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response) throws AuthenticationErrorException, PermissionDeniedException{
+    public void create_page(String username, String pageEmail, String pagename, String pagePic) throws SQLException, UndefinedAccountException {
+        Account acc = null;
+        for (Account a : accountList)
+            if (a.getUsername().equals(username)) {
+                acc = a;
+                break;
+            }
+        if (acc == null)
+            throw new UndefinedAccountException();
+        PageObject page = network.newPage(username, pageEmail, pagename, pagePic);
+        acc.addPage(page);
+    }
+
+    @Override
+    public void delete_page(int pageID) throws PageDoesNotExistException, SQLException {
+        PageObject page = network.getPage(pageID);
+        if (page.getUserID() == null)
+            throw new PageDoesNotExistException();
+        network.deletePage(page);
+        for (Account acc : accountList)
+            if (acc.getUsername().equals(page.getUserID()))
+                acc.removePage(page);
+    }
+
+    @Override
+    public void create_post(int pageID, String postTime, String postText) throws PageDoesNotExistException, SQLException {
+        PageObject page = network.getPage(pageID);
+        if (page.getUserID() == null)
+            throw new PageDoesNotExistException();
+        PostObject post = network.newPost(pageID, postTime, postText);
+        page.addPost(post);
+    }
+
+    @Override
+    public void delete_post(int postID) throws SQLException, PostDoesNotExistException {
+        PostObject post = network.getPost(postID);
+        if (post.getPostDate() == null)
+            throw new PostDoesNotExistException();
+        network.deletePost(post);
+        PageObject page = network.getPage(post.getPageId());
+        for (Account acc : accountList)
+            if (acc.getUsername().equals(page.getUserID()))
+                for (PageObject page2 : acc.getPages())
+                    if (page2.getPageId() == page.getPageId()) {
+                        page2.removePost(post);
+                        break;
+                    }
+    }
+
+    @Override
+    public Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response) throws AuthenticationErrorException, PermissionDeniedException, CloneNotSupportedException {
         HttpSession session = request.getSession(false);
 
         if (session == null)
@@ -231,12 +287,26 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
 
         if (a != null && a.isLogged() && a.getPassword().equals(password) && !a.isLocked()){
             String operation = (String) session.getAttribute("OP");
+            Capability cap = (Capability) session.getAttribute("CAP");
 
             switch (operation){
-                case "change_pwd": if (!((String)session.getAttribute("name")).equals(username)) throw new PermissionDeniedException(); break;
-                case "create_account": if (!(username.equals("root"))) throw new PermissionDeniedException(); break;
+                case "change_pwd": if (!((String)session.getAttribute("name")).equals(username)) throw new PermissionDeniedException();
+                case "create_account":
                 case "delete_account": if (!(username.equals("root"))) throw new PermissionDeniedException(); break;
-                default: ;
+
+                //TODO decide between these 2 options
+
+                //option 1: (probably more secure, bigger code)
+                case "create_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.create)) throw new PermissionDeniedException(); break;
+                case "delete_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.delete)) throw new PermissionDeniedException(); break;
+                case "access_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.access)) throw new PermissionDeniedException(); break;
+                case "follow_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.submit_follow)) throw new PermissionDeniedException(); break;
+                case "authorize_follow_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.authorize_follow)) throw new PermissionDeniedException(); break;
+                case "like_post": if (!accessController.checkPermission(cap, Resource.Post, Operation.like)) throw new PermissionDeniedException(); break;
+
+                //option 2: (probably less secure, smaller code, but would need to rewrite code so that Operation valueOf is the actual value of the enum)
+                case "like_post": if (!accessController.checkPermission(cap, Resource.Post, Operation.like)) throw new PermissionDeniedException(); break;
+                default: if (!accessController.checkPermission(cap, Resource.Page, Operation.valueOf(operation))) throw new PermissionDeniedException(); break;
             }
 
             return a;
@@ -259,6 +329,11 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
     @Override
     public List<Account> userList() {
         return accountList;
+    }
+
+    @Override
+    public Capability getCapability(Role role) {
+        return accessController.makeKey(role);
     }
 
     private String encrypt(String Data) throws Exception {

@@ -31,6 +31,7 @@ public class LoginAuth extends HttpServlet {
             HttpSession session = request.getSession(true);
             session.setAttribute("USER", authUser.getUsername());
             session.setAttribute("PWD", authUser.getPassword());
+            session.setAttribute("CAP", auth.getCapability(authUser.getRole()));
 
             response.sendRedirect("/myApp/main");
             

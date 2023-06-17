@@ -92,8 +92,6 @@ public class AccessController {
             Permission aux = new Permission(res, op);
 
             return permissions.contains(aux);
-        }else{
-            //TODO create new token
         }
 
         return false;

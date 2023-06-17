@@ -1,8 +1,11 @@
 package src;
 
+import src.AccessController.Capability;
+import src.AccessController.Role;
 import src.Account;
 import src.Exceptions.*;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,7 +34,7 @@ public interface Authenticator {
     void delete_account(String name) throws UndefinedAccountException, Exception;
 
     //returns a clone (readonly) of an existing account object
-    Account get_account(String name);
+    Account get_account(String name) throws CloneNotSupportedException;
 
     /*
     changes the password of the account name to pwd1
@@ -81,7 +84,17 @@ public interface Authenticator {
         operations that require authentication (e.g., if the app
         needs to know who is the authority requesting the op)
      */
-    Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response) throws AuthenticationErrorException, PermissionDeniedException;
+    Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response) throws AuthenticationErrorException, PermissionDeniedException, CloneNotSupportedException;
 
     List<Account> userList();
+
+    Capability getCapability(Role role);
+
+    void create_page(String username, String pageEmail, String pagename, String pagePic) throws Exception, UndefinedAccountException;
+
+    void delete_page(int pageID) throws PageDoesNotExistException, SQLException;
+
+    void create_post(int pageID, String postTime, String postText) throws PageDoesNotExistException, SQLException;
+
+    void delete_post(int postID) throws SQLException, PostDoesNotExistException;
 }

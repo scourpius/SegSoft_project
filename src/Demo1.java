@@ -30,13 +30,13 @@ public static void main(String[] args) throws Exception
 	
 	System.out.println("\ngetfollowed:");
 	List<PageObject> pl = app.getfollowed(p.getPageId()) ;
-	for (PageObject  x : pl) { System.out.println(p.getUserId()+" follows "+x.getUserId()); };
+	for (PageObject  x : pl) { System.out.println(p.getUserID()+" follows "+x.getUserID()); };
 
 	app.updatefollowsstatus(p.getPageId(),r.getPageId(),FState.OK);
 	
 	System.out.println("\ngetfollowed:");
 	pl = app.getfollowed(p.getPageId()) ;
-	for (PageObject  x : pl) { System.out.println(p.getUserId()+" follows "+x.getUserId()); };
+	for (PageObject  x : pl) { System.out.println(p.getUserID()+" follows "+x.getUserID()); };
 
 	
 	PostObject po1 = app.newPost(p.getPageId(), "11.2.2023", "hello there");
@@ -47,7 +47,7 @@ public static void main(String[] args) throws Exception
 
 	List<PageObject> lpages = app.getAllPages();
 	for (PageObject  x : lpages) {
-	    System.out.println(x.getUserId()+" : "+x.getEmail());
+	    System.out.println(x.getUserID()+" : "+x.getEmail());
 	};
 
 	System.out.println("\nupdatePage");
@@ -60,7 +60,7 @@ public static void main(String[] args) throws Exception
 
 	lpages = app.getAllPages();
 	for (PageObject  x : lpages) {
-	    System.out.println(x.getUserId()+" : "+x.getEmail());
+	    System.out.println(x.getUserID()+" : "+x.getEmail());
 	};
 	
 	System.out.println("\ngetPosts()");
@@ -87,14 +87,14 @@ public static void main(String[] args) throws Exception
 	System.out.println("\ngetLikess(post_id)");
 	lpages = app.getLikes(po3.getPostId());
 	for (PageObject  x : lpages) {
-	    System.out.println(po3.getPostText()+" liked by " + x.getUserId());
+	    System.out.println(po3.getPostText()+" liked by " + x.getUserID());
 	};
 
 	System.out.println("\ngetLikess(post_id)");
 	app.unlike(po3.getPostId(),p.getPageId());
 	lpages = app.getLikes(po3.getPostId());
 	for (PageObject  x : lpages) {
-	    System.out.println(po3.getPostText()+" liked by " + x.getUserId());
+	    System.out.println(po3.getPostText()+" liked by " + x.getUserID());
 	};
 	
 	app.deletePage(p);

@@ -2,11 +2,14 @@ package src;
 
 import src.AccessController.Role;
 
-public class Account{
+import java.util.ArrayList;
+
+public class Account implements Cloneable{
 
     private String username, password;
     private boolean logged_in, locked;
     private Role role;
+    private ArrayList<PageObject> pages;
 
     public Account(String username, String password, Role role){
         this.username = username;
@@ -58,5 +61,22 @@ public class Account{
 
     public void changeRole(Role role){
         this.role = role;
+    }
+
+    public void addPage(PageObject page) {
+        this.pages.add(page);
+    }
+
+    public ArrayList<PageObject> getPages() {
+        return pages;
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
+    public void removePage(PageObject page) {
+                pages.remove(page);
     }
 }
