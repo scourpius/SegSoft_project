@@ -167,12 +167,12 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>LikeResource</servlet-name>
-        <servlet-class>src.LikeResource</servlet-class>
+        <servlet-name>LikePost</servlet-name>
+        <servlet-class>src.LikePost</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>LikeResource</servlet-name>
-        <url-pattern>/likeResource</url-pattern>
+        <servlet-name>LikePost</servlet-name>
+        <url-pattern>/likePost</url-pattern>
     </servlet-mapping>
 </web-app>
 

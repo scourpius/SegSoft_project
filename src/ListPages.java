@@ -27,7 +27,7 @@ public class ListPages extends HttpServlet {
             HttpSession session = request.getSession(false);
 
             if (session != null)
-                session.setAttribute("OP", "access");
+                session.setAttribute("OP", "list_pages");
 
             auth.check_authenticated_request(request, response);
 

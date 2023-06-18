@@ -78,6 +78,9 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                 for (Account acc : accountList)
                     if (acc.getUsername().equals(page.getUserID())) {
                         acc.addPage(page);
+                        for (PostObject post : network.getAllPosts())
+                            if (post.getPageId() == page.getPageId())
+                                page.addPost(post);
                         break;
                     }
             }
@@ -202,7 +205,8 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                 String encPass = encrypt(pwd);
                 if (!encPass.equals(a.getPassword()))
                     throw new AuthenticationErrorException();
-                    
+
+
                 a.login();
                 return a;
             }
@@ -299,14 +303,19 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                 //option 1: (probably more secure, bigger code)
                 case "create_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.create)) throw new PermissionDeniedException(); break;
                 case "delete_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.delete)) throw new PermissionDeniedException(); break;
-                case "access_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.access)) throw new PermissionDeniedException(); break;
+                case "list_pages": if (!accessController.checkPermission(cap, Resource.Page, Operation.access)) throw new PermissionDeniedException(); break;
                 case "follow_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.submit_follow)) throw new PermissionDeniedException(); break;
                 case "authorize_follow_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.authorize_follow)) throw new PermissionDeniedException(); break;
-                case "like_post": if (!accessController.checkPermission(cap, Resource.Post, Operation.like)) throw new PermissionDeniedException(); break;
-
-                //option 2: (probably less secure, smaller code, but would need to rewrite code so that Operation valueOf is the actual value of the enum)
-                case "like_post": if (!accessController.checkPermission(cap, Resource.Post, Operation.like)) throw new PermissionDeniedException(); break;
-                default: if (!accessController.checkPermission(cap, Resource.Page, Operation.valueOf(operation))) throw new PermissionDeniedException(); break;
+                case "like_post":
+                    if (!accessController.checkPermission(cap, Resource.Post, Operation.like)) {
+                        String postID = (String) session.getAttribute("POSTID");
+                        for (PageObject page : a.getFollowedPages())
+                            for (PostObject post : page.getPosts())
+                                if (post.getPostId().equals(postID))
+                        throw new PermissionDeniedException();
+                    }
+                    break;
+                default:
             }
 
             return a;
