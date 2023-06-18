@@ -22,7 +22,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
     private SN network;
 
     private static List<Account> accountList;
-    private static List<PageObject> pagesOwned;
+    private static List<PageObject> ownedPages;
     private static List<PageObject> followedPages;
 
     private static final String ALGO = "AES";
@@ -51,8 +51,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                     ");");
 
             accountList = new ArrayList<>();
-            pagesOwned = new ArrayList<>();
-            postsOwned = new ArrayList<>();
+            ownedPages = new ArrayList<>();
             followedPages = new ArrayList<>();
             accessController = new AccessController();
 
@@ -79,16 +78,6 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
 
             network = new SN();
             network.DBBuild();
-            for (PageObject page : network.getAllPages()){
-                for (Account acc : accountList)
-                    if (acc.getUsername().equals(page.getUserID())) {
-                        acc.addPage(page);
-                        for (PostObject post : network.getAllPosts())
-                            if (post.getPageId() == page.getPageId())
-                                page.addPost(post);
-                        break;
-                    }
-            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -211,8 +200,8 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                 if (!encPass.equals(a.getPassword()))
                     throw new AuthenticationErrorException();
 
-                pagesOwned = network.getPages(name);
-                for (PageObject page : pagesOwned)
+                ownedPages = network.getPages(name);
+                for (PageObject page : ownedPages)
                     followedPages.addAll(network.getfollowed(page.getPageId()));
                 a.login();
                 return a;
@@ -229,7 +218,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         for (Account a : accountList)
             if (a.getUsername().equals(acc.getUsername())) {
                 a.logout();
-                pagesOwned = new ArrayList<>();
+                ownedPages = new ArrayList<>();
                 followedPages = new ArrayList<>();
                 break;
             }
@@ -248,8 +237,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
             throw new UndefinedAccountException();
         PageObject page = network.newPage(username, pageEmail, pagename, pagePic);
         if (sessionOwner.equals(username))
-            pagesOwned.add(page);
-        acc.addPage(page);
+            ownedPages.add(page);
     }
 
     @Override
@@ -258,34 +246,68 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         if (page.getUserID() == null)
             throw new PageDoesNotExistException();
         network.deletePage(page);
-        for (Account acc : accountList)
-            if (acc.getUsername().equals(page.getUserID()))
-                acc.removePage(page);
+        followedPages.remove(page);
+        ownedPages.remove(page);
     }
 
     @Override
-    public void create_post(int pageID, String postTime, String postText) throws PageDoesNotExistException, SQLException {
+    public void create_post(int pageID, String postTime, String postText) throws PageDoesNotExistException, SQLException, AuthenticationErrorException {
         PageObject page = network.getPage(pageID);
         if (page.getUserID() == null)
             throw new PageDoesNotExistException();
+        if (!ownedPages.contains(page))
+            throw new AuthenticationErrorException();
         PostObject post = network.newPost(pageID, postTime, postText);
-        page.addPost(post);
     }
 
     @Override
-    public void delete_post(int postID) throws SQLException, PostDoesNotExistException {
+    public void delete_post(int postID) throws SQLException, PostDoesNotExistException, AuthenticationErrorException {
         PostObject post = network.getPost(postID);
         if (post.getPostDate() == null)
             throw new PostDoesNotExistException();
-        network.deletePost(post);
         PageObject page = network.getPage(post.getPageId());
-        for (Account acc : accountList)
-            if (acc.getUsername().equals(page.getUserID()))
-                for (PageObject page2 : acc.getPages())
-                    if (page2.getPageId() == page.getPageId()) {
-                        page2.removePost(post);
-                        break;
-                    }
+        if (!ownedPages.contains(page))
+            throw new AuthenticationErrorException();
+        network.deletePost(post);
+    }
+
+    @Override
+    public List<PostObject> access_posts (int pageID) throws SQLException, PermissionDeniedException {
+        PageObject page = network.getPage(pageID);
+        if (!(followedPages.contains(page) || ownedPages.contains(page)))
+            throw new PermissionDeniedException();
+        return network.getPagePosts(pageID);
+    }
+
+    public void like_post (int postID) throws SQLException, PermissionDeniedException {
+        PostObject post = network.getPost(postID);
+        PageObject page = network.getPage(post.getPageId());
+        if (!(followedPages.contains(page) || ownedPages.contains(page)))
+            throw new PermissionDeniedException();
+
+        page = getMainPage();
+        if (network.getLikes(postID).contains(page))
+            network.unlike(postID, page.getPageId());
+        else
+            network.like(postID, page.getPageId());
+    }
+
+    public void follow_page (int pageID) throws SQLException, PermissionDeniedException {
+        PageObject page = network.getPage(pageID);
+        if (followedPages.contains(page) || ownedPages.contains(page))
+            throw new PermissionDeniedException();
+
+        page = getMainPage();
+        network.follows(page.getPageId(), pageID, FState.PENDING);
+    }
+
+    public void authorize_follow (int pageID, int followID, boolean authorized) throws SQLException, PermissionDeniedException {
+        if (!ownedPages.contains(network.getPage(pageID)))
+            throw new PermissionDeniedException();
+        if (authorized)
+            network.updatefollowsstatus(followID, pageID, FState.OK);
+        else
+            network.updatefollowsstatus(followID, pageID, FState.NONE);
     }
 
     @Override
@@ -309,26 +331,17 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                 case "create_account":
                 case "delete_account": if (!(username.equals("root"))) throw new PermissionDeniedException(); break;
 
-                //TODO decide between these 2 options
-
-                //option 1: (probably more secure, bigger code)
                 case "create_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.create)) throw new PermissionDeniedException(); break;
                 case "delete_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.delete)) throw new PermissionDeniedException(); break;
                 case "list_pages": if (!accessController.checkPermission(cap, Resource.Page, Operation.access)) throw new PermissionDeniedException(); break;
                 case "follow_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.submit_follow)) throw new PermissionDeniedException(); break;
-                case "authorize_follow_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.authorize_follow)) throw new PermissionDeniedException(); break;
-                case "like_post":
-                    if (!accessController.checkPermission(cap, Resource.Post, Operation.like)) {
-                        String postID = (String) session.getAttribute("POSTID");
-                        for (PageObject page : a.getFollowedPages())
-                            for (PostObject post : page.getPosts())
-                                if (post.getPostId().equals(postID))
-                        throw new PermissionDeniedException();
-                    }
-                    break;
-                default:
+                case "authorize_follow": if (!accessController.checkPermission(cap, Resource.Page, Operation.authorize_follow)) throw new PermissionDeniedException(); break;
+                case "like_post": if (!accessController.checkPermission(cap, Resource.Page, Operation.like)) throw new PermissionDeniedException(); break;
+                case "create_post": if (!accessController.checkPermission(cap, Resource.Post, Operation.create)) throw new PermissionDeniedException(); break;
+                case "delete_post": if (!accessController.checkPermission(cap, Resource.Post, Operation.delete)) throw new PermissionDeniedException(); break;
+                case "access_post": if (!accessController.checkPermission(cap, Resource.Post, Operation.access)) throw new PermissionDeniedException(); break;
+                default: throw new PermissionDeniedException();
             }
-
             return a;
         }
 
@@ -371,5 +384,15 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                 getDecoder().decode(encrypted);
         byte[] decValue = c.doFinal(decodedValue);
         return new String(decValue);
+    }
+
+    /**
+     * @return User's main page to be used during follow and like operations
+     * @throws PermissionDeniedException when user does not have a page associated
+     */
+    private PageObject getMainPage() throws PermissionDeniedException {
+        if (ownedPages.size() < 1)
+            throw new PermissionDeniedException();
+        return ownedPages.get(0);
     }
 }

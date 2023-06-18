@@ -65,14 +65,4 @@ public class PageObject {
     {
 	page_pic = _page_pic ;
     }
-
-    public void addPost(PostObject post) {
-        posts.add(post);
-    }
-
-    public ArrayList<PostObject> getPosts() {
-        return posts;
-    }
-
-    public void removePost (PostObject post) { posts.remove(post);}
 }

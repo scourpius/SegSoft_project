@@ -90,11 +90,13 @@ public interface Authenticator {
 
     Capability getCapability(Role role);
 
-    void create_page(String username, String pageEmail, String pagename, String pagePic) throws Exception, UndefinedAccountException;
+    void create_page(String username, String pageEmail, String pagename, String pagePic, String sessionOnwer) throws Exception, UndefinedAccountException;
 
     void delete_page(int pageID) throws PageDoesNotExistException, SQLException;
 
-    void create_post(int pageID, String postTime, String postText) throws PageDoesNotExistException, SQLException;
+    void create_post(int pageID, String postTime, String postText) throws PageDoesNotExistException, SQLException, AuthenticationErrorException;
 
-    void delete_post(int postID) throws SQLException, PostDoesNotExistException;
+    void delete_post(int postID) throws SQLException, PostDoesNotExistException, AuthenticationErrorException;
+
+    List<PostObject> access_posts (int pageID) throws SQLException, PermissionDeniedException;
 }

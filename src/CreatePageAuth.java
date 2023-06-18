@@ -35,7 +35,7 @@ public class CreatePageAuth extends HttpServlet {
 
             authUser = auth.check_authenticated_request(request, response);
 
-            auth.create_page(username, pageEmail, pagename, pagePic);
+            auth.create_page(username, pageEmail, pagename, pagePic, (String) session.getAttribute("USER"));
             response.sendRedirect("/myApp/main");
 
         } catch(AuthenticationErrorException e){
