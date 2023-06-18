@@ -257,7 +257,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
             throw new PageDoesNotExistException();
         if (!ownedPages.contains(page))
             throw new AuthenticationErrorException();
-        PostObject post = network.newPost(pageID, postTime, postText);
+        network.newPost(pageID, postTime, postText);
     }
 
     @Override
