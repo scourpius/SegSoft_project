@@ -23,7 +23,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
 
     private static List<Account> accountList;
     private static List<PageObject> pagesOwned;
-    private static List<PageObject> postsOwned;
+    private static List<PageObject> followedPages;
 
     private static final String ALGO = "AES";
     private static final byte[] keyValue =
@@ -53,6 +53,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
             accountList = new ArrayList<>();
             pagesOwned = new ArrayList<>();
             postsOwned = new ArrayList<>();
+            followedPages = new ArrayList<>();
             accessController = new AccessController();
 
             ResultSet rs;
@@ -211,7 +212,8 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                     throw new AuthenticationErrorException();
 
                 pagesOwned = network.getPages(name);
-                postsOwned = network.getPosts(name);
+                for (PageObject page : pagesOwned)
+                    followedPages.addAll(network.getfollowed(page.getPageId()));
                 a.login();
                 return a;
             }
@@ -228,6 +230,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
             if (a.getUsername().equals(acc.getUsername())) {
                 a.logout();
                 pagesOwned = new ArrayList<>();
+                followedPages = new ArrayList<>();
                 break;
             }
         acc.logout();
