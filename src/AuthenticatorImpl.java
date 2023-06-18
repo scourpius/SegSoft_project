@@ -22,6 +22,8 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
     private SN network;
 
     private static List<Account> accountList;
+    private static List<PageObject> pagesOwned;
+    private static List<PageObject> postsOwned;
 
     private static final String ALGO = "AES";
     private static final byte[] keyValue =
@@ -49,6 +51,8 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                     ");");
 
             accountList = new ArrayList<>();
+            pagesOwned = new ArrayList<>();
+            postsOwned = new ArrayList<>();
             accessController = new AccessController();
 
             ResultSet rs;
@@ -206,7 +210,8 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                 if (!encPass.equals(a.getPassword()))
                     throw new AuthenticationErrorException();
 
-
+                pagesOwned = network.getPages(name);
+                postsOwned = network.getPosts(name);
                 a.login();
                 return a;
             }
@@ -222,13 +227,14 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         for (Account a : accountList)
             if (a.getUsername().equals(acc.getUsername())) {
                 a.logout();
+                pagesOwned = new ArrayList<>();
                 break;
             }
         acc.logout();
     }
 
     @Override
-    public void create_page(String username, String pageEmail, String pagename, String pagePic) throws SQLException, UndefinedAccountException {
+    public void create_page(String username, String pageEmail, String pagename, String pagePic, String sessionOwner) throws SQLException, UndefinedAccountException {
         Account acc = null;
         for (Account a : accountList)
             if (a.getUsername().equals(username)) {
@@ -238,6 +244,8 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         if (acc == null)
             throw new UndefinedAccountException();
         PageObject page = network.newPage(username, pageEmail, pagename, pagePic);
+        if (sessionOwner.equals(username))
+            pagesOwned.add(page);
         acc.addPage(page);
     }
 

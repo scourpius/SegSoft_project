@@ -305,7 +305,7 @@ public class SN {
 	 return lpages;
      }
 
-	 public List<PageObject> getPages (int userID) throws SQLException {
+	 public List<PageObject> getPages (String userID) throws SQLException {
 		List<PageObject> lpages = new ArrayList<>();
 		Statement stmtl = theconnection.createStatement();
 		ResultSet rs = stmtl.executeQuery("SELECT page_id from page where user_id = " + userID);
