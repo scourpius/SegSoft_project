@@ -47,7 +47,7 @@ public class ShowPage extends HttpServlet {
             out.println("<H1> User not authenticated </H1>");
         } catch (PermissionDeniedException e) {
             out.println("<H1> Permission denied </H1>");
-            out.println("<a href='http://localhost:8080/myApp/followAuth'>");
+            out.println("<a href='http://localhost:8080/myApp/followAuth?page_id=" + page_id + "'>");
             out.println("<button>Request follow</button>");
             out.println("</a>");
             request.setAttribute("page_id", page_id);

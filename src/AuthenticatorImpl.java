@@ -300,7 +300,7 @@ public class AuthenticatorImpl extends HttpServlet {
 
     public void follow_page (int pageID) throws SQLException, PermissionDeniedException {
         PageObject page = network.getPage(pageID);
-        if (!(account.getFollow().contains(page) || account.getPages().contains(page)))
+        if ((account.getFollow().contains(page) || account.getPages().contains(page)))
             throw new PermissionDeniedException();
 
         page = getMainPage();

@@ -37,9 +37,9 @@ public class AuthFollow extends HttpServlet {
                     out.println("<H1>Pending followers:</H1>");
                     for (PageObject pendingFollower : auth.getPendingFollowers(page_id)) {
                         out.println("<p> PageID: " + pendingFollower.getPageId() + " Page title: " + pendingFollower.getPageTitle() + " Page associated email: " + pendingFollower.getEmail() + "</p>");
-                        out.println("<a href='http://localhost:8080/myApp/authorizeFollowAuth'>");
+                        out.println("<a href='http://localhost:8080/myApp/authorizeFollowAuth?page_id=" + page_id + "&follow_id=" + pendingFollower.getPageId() + "&bool=" + true + "'>");
                         out.println("<button>Authorize Follower</button>");
-                        out.println("<a href='http://localhost:8080/myApp/authorizeFollowAuth'>");
+                        out.println("<a href='http://localhost:8080/myApp/authorizeFollowAuth?page_id=" + page_id + "&follow_id=" + pendingFollower.getPageId() + "&bool=" + false + "'>");
                         out.println("<button>Deny Follower</button>");
                         out.println("</a>");
                     }

@@ -16,6 +16,8 @@ public class AuthorizeFollowAuth extends HttpServlet {
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         int pageID = Integer.parseInt(request.getParameter("page_id"));
+        int followID = Integer.parseInt(request.getParameter("follow_id"));
+        boolean bool = Boolean.parseBoolean(request.getParameter("bool"));
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
@@ -28,15 +30,11 @@ public class AuthorizeFollowAuth extends HttpServlet {
             HttpSession session = request.getSession(false);
 
             if (session != null)
-                session.setAttribute("OP", "create_page");
+                session.setAttribute("OP", "authorize_follow");
 
-            authUser = auth.check_authenticated_request(request, response);
-
-            auth.authorize_follow(pageID, authUser.getPages().get(0).getPageId(), true);
+            auth.authorize_follow(pageID, followID, bool);
             response.sendRedirect("/myApp/main");
 
-        } catch(AuthenticationErrorException e){
-            out.println("<H1> Account not authenticated </H1>");
         } catch (PermissionDeniedException e){
             out.println("<H1> Permission Denied </H1>");
         } catch (Exception e) {

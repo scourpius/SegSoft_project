@@ -32,9 +32,9 @@ public class FollowAuth extends HttpServlet {
 
             authUser = auth.check_authenticated_request(request, response);
 
-            out.println("Request for follow sent");
             auth.follow_page(Integer.parseInt(page_id));
-            
+            out.println("Request for follow sent");
+
         } catch(AuthenticationErrorException e){
             out.println("<H1> Account not authenticated </H1>");
         } catch (PermissionDeniedException e){
