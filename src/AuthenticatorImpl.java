@@ -336,7 +336,7 @@ public class AuthenticatorImpl extends HttpServlet {
                 case "change_pwd": if (!((String)session.getAttribute("name")).equals(username)) throw new PermissionDeniedException();
                 case "create_account":
                 case "delete_account": if (!(username.equals("root"))) throw new PermissionDeniedException(); break;
-
+                case "logout": return a;
                 case "create_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.create)) throw new PermissionDeniedException(); break;
                 case "delete_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.delete)) throw new PermissionDeniedException(); break;
                 case "list_pages": if (!accessController.checkPermission(cap, Resource.Page, Operation.access)) throw new PermissionDeniedException(); break;
@@ -346,6 +346,7 @@ public class AuthenticatorImpl extends HttpServlet {
                 case "create_post": if (!accessController.checkPermission(cap, Resource.Post, Operation.create)) throw new PermissionDeniedException(); break;
                 case "delete_post": if (!accessController.checkPermission(cap, Resource.Post, Operation.delete)) throw new PermissionDeniedException(); break;
                 case "access_post": if (!accessController.checkPermission(cap, Resource.Post, Operation.access)) throw new PermissionDeniedException(); break;
+                case "show_page": if (accessController.checkPermission(cap, Resource.Page, Operation.access)) return a;
                 default: throw new PermissionDeniedException();
             }
             return a;

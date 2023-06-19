@@ -31,8 +31,21 @@ public class ListPages extends HttpServlet {
 
             auth.check_authenticated_request(request, response);
 
-            for (PageObject page : auth.pageList())
+            out.println("<form name='visitPage'");
+            out.println("action='http://localhost:8080/myApp/showPage' method='GET'>");
+            out.println("<label for='page_id'>page_id:</label>");
+            out.print("<input type='text' size=35 name='page_id'><br>");
+            out.println("<input type='hidden' value=redirect_url>");
+            out.println("<input type='submit' value='Submit'>");
+            out.println("</form>");
+
+            for (PageObject page : auth.pageList()){
                 out.println("<p> PageID: " + page.getPageId() + " Page title: " + page.getPageTitle() + " Page associated email: " + page.getEmail() + "<p>");
+                out.println("<a href='http://localhost:8080/myApp/main'>");
+                out.println("<button>Visit Page</button>");
+                out.println("</a>");
+            }
+                
             
 
         } catch (AuthenticationErrorException e) {
