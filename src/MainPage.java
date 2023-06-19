@@ -53,6 +53,9 @@ public class MainPage extends HttpServlet {
                     out.println("<a href='http://localhost:8080/myApp/deletePost'>");
                     out.println("<button>Delete Post</button>");
                     out.println("</a><br><br>");
+                    out.println("<a href='http://localhost:8080/myApp/authorizeFollow'>");
+                    out.println("<button>Authorize Follow</button>");
+                    out.println("</a><br><br>");
             }
             out.println("</BODY>");
             out.println("</HTML>");

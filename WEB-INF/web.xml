@@ -201,6 +201,24 @@
         <servlet-name>ShowPage</servlet-name>
         <url-pattern>/showPage</url-pattern>
     </servlet-mapping>
-    
+
+    <servlet>
+        <servlet-name>AuthorizeFollow</servlet-name>
+        <servlet-class>src.AuthorizeFollow</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AuthorizeFollow</servlet-name>
+        <url-pattern>/authorizeFollow</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>AuthorizeFollowAuth</servlet-name>
+        <servlet-class>src.AuthorizeFollowAuth</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AuthorizeFollowAuth</servlet-name>
+        <url-pattern>/authorizeFollowAuth</url-pattern>
+    </servlet-mapping>
+
 </web-app>
 

@@ -5,10 +5,8 @@ import javax.servlet.http.*;
 
 import src.Exceptions.*;
 import java.io.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
-public class CreatePostAuth extends HttpServlet {
+public class AuthrorizeFollowAuth extends HttpServlet {
     public void init() throws ServletException {
         super.init();
     }
@@ -16,12 +14,8 @@ public class CreatePostAuth extends HttpServlet {
     AuthenticatorImpl auth = AuthenticatorImpl.getInstance();
     Account authUser;
 
-    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{        
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
         int pageID = Integer.parseInt(request.getParameter("page_id"));
-
-        String postText = request.getParameter("postText");
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yy HH:mm");
-        String postTime = dtf.format(LocalDateTime.now());
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
@@ -31,23 +25,20 @@ public class CreatePostAuth extends HttpServlet {
         out.println("<BODY>");
 
         try {
-
             HttpSession session = request.getSession(false);
 
             if (session != null)
-                session.setAttribute("OP", "create_post");
+                session.setAttribute("OP", "create_page");
 
             authUser = auth.check_authenticated_request(request, response);
 
-            auth.create_post(pageID, postTime, postText);
+            auth.authorize_follow(pageID, authUser.getPages().get(0).getPageId(), true);
             response.sendRedirect("/myApp/main");
 
         } catch(AuthenticationErrorException e){
             out.println("<H1> Account not authenticated </H1>");
         } catch (PermissionDeniedException e){
             out.println("<H1> Permission Denied </H1>");
-        } catch (PageDoesNotExistException e) {
-            out.println("<H1> Page does not exist </H1>");
         } catch (Exception e) {
             out.println("<H1> Error </H1>");
         }
