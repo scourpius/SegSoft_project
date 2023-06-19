@@ -47,8 +47,7 @@ public class AuthenticatorImpl extends HttpServlet {
 
         try (Connection conn = connect()){
             Statement stmt = conn.createStatement();
-            conn.createStatement().execute("DROP TABLE " + tableName);
-            
+
             conn.createStatement().execute("CREATE TABLE IF NOT EXISTS " + tableName + "(\n" +
                     "username text PRIMARY KEY,\n" +
                     "role text NOT NULL,\n" +

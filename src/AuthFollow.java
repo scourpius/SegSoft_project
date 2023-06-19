@@ -32,9 +32,9 @@ public class AuthFollow extends HttpServlet {
 
             authUser = auth.check_authenticated_request(request, response);
 
+            out.println("<H1>Pending followers:</H1>");
             for (PageObject page : authUser.getPages())
                 if (page.getPageId() == page_id) {
-                    out.println("<H1>Pending followers:</H1>");
                     for (PageObject pendingFollower : auth.getPendingFollowers(page_id)) {
                         out.println("<p> PageID: " + pendingFollower.getPageId() + " Page title: " + pendingFollower.getPageTitle() + " Page associated email: " + pendingFollower.getEmail() + "</p>");
                         out.println("<a href='http://localhost:8080/myApp/authorizeFollowAuth?page_id=" + page_id + "&follow_id=" + pendingFollower.getPageId() + "&bool=" + true + "'>");
