@@ -11,7 +11,7 @@ public class ChangePasswordAuth extends HttpServlet {
         super.init();
     }
 
-    Authenticator auth = AuthenticatorImpl.getInstance();
+    AuthenticatorImpl auth = AuthenticatorImpl.getInstance();
     Account authUser;
 
 

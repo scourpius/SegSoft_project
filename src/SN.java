@@ -11,7 +11,7 @@ import java.util.*;
 public class SN {
     
     //private String dburl = "jdbc:sqlite:/Users/luis_caires/Desktop/SoftwareSecurity/App/test.db";		- Prof's url
-	private String dburl = "jdbc:sqlite:/home/rick/Documents/School/Databases/test.db";	//change this to whatever you want
+	private String dburl = "jdbc:sqlite:E:\\Downloaded/test.db";	//change this to whatever you want
 
     private static Connection theconnection = null;
 
@@ -308,11 +308,13 @@ public class SN {
 	 public List<PageObject> getPages (String userID) throws SQLException {
 		List<PageObject> lpages = new ArrayList<>();
 		Statement stmtl = theconnection.createStatement();
-		ResultSet rs = stmtl.executeQuery("SELECT page_id from page where user_id = " + userID);
+		ResultSet rs = stmtl.executeQuery("SELECT page_id FROM page WHERE user_id = '" + userID + "'");
 		while (rs.next()) {
+			System.out.println(rs.getInt("page_id"));
 			PageObject p = getPage(rs.getInt("page_id"));
 			lpages.add(p);
 		}
+
 		return lpages;
 	 }
 }

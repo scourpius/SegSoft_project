@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class AuthenticatorImpl extends HttpServlet implements Authenticator {
+public class AuthenticatorImpl extends HttpServlet {
 
     private final String databaseURL = "jdbc:sqlite:accounts.db";
     private static final String tableName = "Accounts";
@@ -22,8 +22,10 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
     private SN network;
 
     private static List<Account> accountList;
-    private static List<PageObject> ownedPages;
-    private static List<PageObject> followedPages;
+
+    private Account account;
+
+    private List<PageObject> pageList;
 
     private static final String ALGO = "AES";
     private static final byte[] keyValue =
@@ -44,6 +46,8 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         }  
 
         try (Connection conn = connect()){
+            Statement stmt = conn.createStatement();
+            
             conn.createStatement().execute("CREATE TABLE IF NOT EXISTS " + tableName + "(\n" +
                     "username text PRIMARY KEY,\n" +
                     "role text NOT NULL,\n" +
@@ -51,13 +55,10 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                     ");");
 
             accountList = new ArrayList<>();
-            ownedPages = new ArrayList<>();
-            followedPages = new ArrayList<>();
             accessController = new AccessController();
 
             ResultSet rs;
             String sql = "SELECT * FROM " + tableName;
-            Statement stmt = conn.createStatement();
             rs = stmt.executeQuery(sql);
 
             while (rs.next()){
@@ -67,10 +68,11 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
                 accountList.add(new Account(name, pwd, role));
             }
 
-            sql = "INSERT OR IGNORE INTO " + tableName + " VALUES (?, ?)";
+            sql = "INSERT OR IGNORE INTO " + tableName + " VALUES (?, ?, ?)";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, "root");
-            pstmt.setString(2, encrypt("1234"));
+            pstmt.setString(2, Role.Admin.name());
+            pstmt.setString(3, encrypt("1234"));
             pstmt.executeUpdate();
 
             if (get_account("root") == null)
@@ -78,6 +80,8 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
 
             network = new SN();
             network.DBBuild();
+
+            pageList = network.getAllPages();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,7 +96,6 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         return instance;
     }
 
-    @Override
     public void create_account(String name, String pwd1, String pwd2) throws AccountExistsException, PasswordsDontMatchException, Exception {
         if (!pwd1.equals(pwd2)) {
             throw new PasswordsDontMatchException();
@@ -120,7 +123,6 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         accountList.add(new Account(name, encPass, Role.User));
     }
 
-    @Override
     public void delete_account(String name) throws UndefinedAccountException, Exception{
         Account x = null;
         for (Account a : accountList) {
@@ -146,7 +148,6 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         accountList.remove(x);
     }
 
-    @Override
     public Account get_account(String name) throws CloneNotSupportedException {
         for (Account a : accountList) {
             if (a.getUsername().equals(name))
@@ -155,7 +156,6 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         return null;
     }
 
-    @Override
     public void change_pwd(String name, String pwd1, String pwd2) throws UndefinedAccountException, PasswordsDontMatchException, Exception {
         if (!pwd1.equals(pwd2)) {
             throw new PasswordsDontMatchException();
@@ -189,21 +189,30 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         x.change_pwd(encPass);
     }
 
-    @Override
     public Account authenticate_user(String name, String pwd) throws Exception, LockedAccountException, AuthenticationErrorException, UndefinedAccountException {
         for (Account a : accountList){
             if (a.getUsername().equals(name)){
                 if (a.isLocked())
                     throw new LockedAccountException();
-
+                
                 String encPass = encrypt(pwd);
+
                 if (!encPass.equals(a.getPassword()))
                     throw new AuthenticationErrorException();
 
-                ownedPages = network.getPages(name);
-                for (PageObject page : ownedPages)
+                a.setPages(network.getPages(name));
+
+                List<PageObject> followedPages = new ArrayList<>();
+
+                for (PageObject page : a.getPages())
                     followedPages.addAll(network.getfollowed(page.getPageId()));
+                
+                a.setFollow(followedPages);
+
                 a.login();
+
+                account = a;
+                
                 return a;
             }
         }
@@ -211,22 +220,20 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         throw new UndefinedAccountException();
     }
 
-    @Override
     public void logout(Account acc) throws AlreadyAuthenticatedException {
         if (!acc.isLogged())
             throw new AlreadyAuthenticatedException();
         for (Account a : accountList)
             if (a.getUsername().equals(acc.getUsername())) {
                 a.logout();
-                ownedPages = new ArrayList<>();
-                followedPages = new ArrayList<>();
+                
                 break;
             }
         acc.logout();
+        account = null;
     }
 
-    @Override
-    public void create_page(String username, String pageEmail, String pagename, String pagePic, String sessionOwner) throws SQLException, UndefinedAccountException {
+    public void create_page(String username, String pageEmail, String pagename, String pagePic) throws SQLException, UndefinedAccountException {
         Account acc = null;
         for (Account a : accountList)
             if (a.getUsername().equals(username)) {
@@ -236,45 +243,45 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         if (acc == null)
             throw new UndefinedAccountException();
         PageObject page = network.newPage(username, pageEmail, pagename, pagePic);
-        if (sessionOwner.equals(username))
-            ownedPages.add(page);
+
+        if (account.getUsername().equals(username)){
+            account.addPage(page);
+            acc.addPage(page);
+        }
     }
 
-    @Override
     public void delete_page(int pageID) throws PageDoesNotExistException, SQLException {
         PageObject page = network.getPage(pageID);
+
         if (page.getUserID() == null)
             throw new PageDoesNotExistException();
         network.deletePage(page);
-        followedPages.remove(page);
-        ownedPages.remove(page);
+
+        account.remove(page);
     }
 
-    @Override
     public void create_post(int pageID, String postTime, String postText) throws PageDoesNotExistException, SQLException, AuthenticationErrorException {
         PageObject page = network.getPage(pageID);
         if (page.getUserID() == null)
             throw new PageDoesNotExistException();
-        if (!ownedPages.contains(page))
+        if (!account.getPages().contains(page))
             throw new AuthenticationErrorException();
         network.newPost(pageID, postTime, postText);
     }
 
-    @Override
     public void delete_post(int postID) throws SQLException, PostDoesNotExistException, AuthenticationErrorException {
         PostObject post = network.getPost(postID);
         if (post.getPostDate() == null)
             throw new PostDoesNotExistException();
         PageObject page = network.getPage(post.getPageId());
-        if (!ownedPages.contains(page))
+        if (!account.getPages().contains(page))
             throw new AuthenticationErrorException();
         network.deletePost(post);
     }
 
-    @Override
     public List<PostObject> access_posts (int pageID) throws SQLException, PermissionDeniedException {
         PageObject page = network.getPage(pageID);
-        if (!(followedPages.contains(page) || ownedPages.contains(page)))
+        if (!(account.getFollow().contains(page) || account.getPages().contains(page)))
             throw new PermissionDeniedException();
         return network.getPagePosts(pageID);
     }
@@ -282,7 +289,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
     public void like_post (int postID) throws SQLException, PermissionDeniedException {
         PostObject post = network.getPost(postID);
         PageObject page = network.getPage(post.getPageId());
-        if (!(followedPages.contains(page) || ownedPages.contains(page)))
+        if (!(account.getFollow().contains(page) || account.getPages().contains(page)))
             throw new PermissionDeniedException();
 
         page = getMainPage();
@@ -294,7 +301,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
 
     public void follow_page (int pageID) throws SQLException, PermissionDeniedException {
         PageObject page = network.getPage(pageID);
-        if (followedPages.contains(page) || ownedPages.contains(page))
+        if (!(account.getFollow().contains(page) || account.getPages().contains(page)))
             throw new PermissionDeniedException();
 
         page = getMainPage();
@@ -302,7 +309,7 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
     }
 
     public void authorize_follow (int pageID, int followID, boolean authorized) throws SQLException, PermissionDeniedException {
-        if (!ownedPages.contains(network.getPage(pageID)))
+        if (!account.getPages().contains(network.getPage(pageID)))
             throw new PermissionDeniedException();
         if (authorized)
             network.updatefollowsstatus(followID, pageID, FState.OK);
@@ -310,7 +317,6 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
             network.updatefollowsstatus(followID, pageID, FState.NONE);
     }
 
-    @Override
     public Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response) throws AuthenticationErrorException, PermissionDeniedException, CloneNotSupportedException {
         HttpSession session = request.getSession(false);
 
@@ -359,12 +365,14 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
         return null; //should never happen
     }
 
-    @Override
     public List<Account> userList() {
         return accountList;
     }
 
-    @Override
+    public List<PageObject> pageList(){
+        return pageList;
+    }
+
     public Capability getCapability(Role role) {
         return accessController.makeKey(role);
     }
@@ -391,8 +399,8 @@ public class AuthenticatorImpl extends HttpServlet implements Authenticator {
      * @throws PermissionDeniedException when user does not have a page associated
      */
     private PageObject getMainPage() throws PermissionDeniedException {
-        if (ownedPages.size() < 1)
+        if (account.getPages().size() < 1)
             throw new PermissionDeniedException();
-        return ownedPages.get(0);
+        return account.getPages().get(0);
     }
 }

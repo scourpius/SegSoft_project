@@ -122,6 +122,15 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>CreatePageAuth</servlet-name>
+        <servlet-class>src.CreatePageAuth</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CreatePageAuth</servlet-name>
+        <url-pattern>/createPageAuth</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>DeletePage</servlet-name>
         <servlet-class>src.DeletePage</servlet-class>
     </servlet>

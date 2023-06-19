@@ -11,7 +11,7 @@ public class CreateAccountAuth extends HttpServlet {
         super.init();
     }
 
-    Authenticator auth = AuthenticatorImpl.getInstance();
+    AuthenticatorImpl auth = AuthenticatorImpl.getInstance();
     Account authUser;
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{

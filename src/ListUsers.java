@@ -9,7 +9,7 @@ public class ListUsers extends HttpServlet {
         super.init();
     }
 
-    Authenticator auth = AuthenticatorImpl.getInstance();
+    AuthenticatorImpl auth = AuthenticatorImpl.getInstance();
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
             response.setContentType("text/html");
@@ -25,7 +25,7 @@ public class ListUsers extends HttpServlet {
             out.println("</a>");
             
             for (Account a : auth.userList()) {
-                out.println("<H2> Username: " + a.getUsername() + " Password: " + a.getPassword() + "</H2>");
+                out.println("<H2> Username: " + a.getUsername() + ", Role: " + a.getRole() + "</H2>");
             }
 
             out.println("</BODY>");

@@ -11,7 +11,7 @@ public class CreatePageAuth extends HttpServlet {
         super.init();
     }
 
-    Authenticator auth = AuthenticatorImpl.getInstance();
+    AuthenticatorImpl auth = AuthenticatorImpl.getInstance();
     Account authUser;
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
@@ -35,7 +35,7 @@ public class CreatePageAuth extends HttpServlet {
 
             authUser = auth.check_authenticated_request(request, response);
 
-            auth.create_page(username, pageEmail, pagename, pagePic, (String) session.getAttribute("USER"));
+            auth.create_page(username, pageEmail, pagename, pagePic);
             response.sendRedirect("/myApp/main");
 
         } catch(AuthenticationErrorException e){

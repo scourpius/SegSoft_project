@@ -18,8 +18,8 @@ public class CreatePage extends HttpServlet {
         out.println("<HEAD>");
         out.println("</HEAD>");
         out.println("<BODY>");
-        out.println("<form name='pageCreationForm'");
         out.println("<h3>Create a page for a user!</h3><br>");
+        out.println("<form name='pageCreationForm'");
         out.println("action='http://localhost:8080/myApp/createPageAuth' method='GET'>");
         out.println("<label for='username'>Username:</label>");
         out.print("<input type='text' size=35 name='username'><br>");

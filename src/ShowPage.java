@@ -6,8 +6,9 @@ import src.Exceptions.PermissionDeniedException;
 import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.*;
+import java.util.List;
 
-public class ListPages extends HttpServlet {
+public class ShowPage extends HttpServlet {
     public void init() throws ServletException {
         super.init();
     }
@@ -15,6 +16,8 @@ public class ListPages extends HttpServlet {
     AuthenticatorImpl auth = AuthenticatorImpl.getInstance();
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
+        String page_id = request.getParameter("page_id");
+
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
 
@@ -27,19 +30,24 @@ public class ListPages extends HttpServlet {
             HttpSession session = request.getSession(false);
 
             if (session != null)
-                session.setAttribute("OP", "list_pages");
+                session.setAttribute("OP", "show_page");
 
             auth.check_authenticated_request(request, response);
-
-            for (PageObject page : auth.pageList())
-                out.println("<p> PageID: " + page.getPageId() + " Page title: " + page.getPageTitle() + " Page associated email: " + page.getEmail() + "<p>");
             
+            List<PostObject> posts = auth.access_posts(Integer.parseInt(page_id));
+
+            for(PostObject post : posts)
+                out.println("id: " + post.getPostId() + ", msg: " + post.getPostText() + ", date: " + post.getPostDate());
 
         } catch (AuthenticationErrorException e) {
             out.println("<H1> User not authenticated </H1>");
         } catch (PermissionDeniedException e) {
             out.println("<H1> Permission denied </H1>");
-        } catch (CloneNotSupportedException e) {
+            out.println("<a href='http://localhost:8080/myApp/followAuth'>");
+            out.println("<button>Request follow</button>");
+            out.println("</a>");
+            request.setAttribute("page_id", page_id);
+        } catch (Exception e) {
             out.println("<H1> ERROR </H1>");
         }
 
