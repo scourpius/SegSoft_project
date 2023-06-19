@@ -10,8 +10,7 @@ import java.util.*;
 
 public class SN {
     
-    //private String dburl = "jdbc:sqlite:/Users/luis_caires/Desktop/SoftwareSecurity/App/test.db";		- Prof's url
-	private String dburl = "jdbc:sqlite:/home/rick/Documents/School/Databases/test.db";	//change this to whatever you want
+    private String dburl = "jdbc:sqlite:/Users/luis_caires/Desktop/SoftwareSecurity/App/test.db";
 
     private static Connection theconnection = null;
 
