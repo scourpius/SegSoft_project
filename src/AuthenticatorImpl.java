@@ -112,10 +112,11 @@ public class AuthenticatorImpl extends HttpServlet {
         String encPass = encrypt(pwd1);
 
         try (Connection conn = connect()){
-            String sql = "INSERT INTO " + tableName + " VALUES (?, ?)";
+            String sql = "INSERT INTO " + tableName + " VALUES (?, ?, ?)";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, name);
-            pstmt.setString(2, encPass);
+            pstmt.setString(2, Role.User.name());
+            pstmt.setString(3, encPass);
             pstmt.executeUpdate();
         } catch (SQLException e) {
             throw new Exception();
@@ -248,8 +249,8 @@ public class AuthenticatorImpl extends HttpServlet {
         if (account.getUsername().equals(username)){
             account.addPage(page);
             acc.addPage(page);
-            pageList.add(page);
         }
+        pageList.add(page);
     }
 
     public void delete_page(int pageID) throws SQLException {
