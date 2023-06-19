@@ -65,4 +65,15 @@ public class PageObject {
     {
 	page_pic = _page_pic ;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+
+        PageObject page = (PageObject) obj;
+
+        return this.page_id == page.getPageId();
+    }
 }

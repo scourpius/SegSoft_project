@@ -346,7 +346,7 @@ public class AuthenticatorImpl extends HttpServlet {
                 case "create_post": if (!accessController.checkPermission(cap, Resource.Post, Operation.create)) throw new PermissionDeniedException(); break;
                 case "delete_post": if (!accessController.checkPermission(cap, Resource.Post, Operation.delete)) throw new PermissionDeniedException(); break;
                 case "access_post": if (!accessController.checkPermission(cap, Resource.Post, Operation.access)) throw new PermissionDeniedException(); break;
-                case "show_page": if (accessController.checkPermission(cap, Resource.Page, Operation.access)) return a;
+                case "show_page": if (!accessController.checkPermission(cap, Resource.Page, Operation.access)) throw new PermissionDeniedException(); break;
                 default: throw new PermissionDeniedException();
             }
             return a;

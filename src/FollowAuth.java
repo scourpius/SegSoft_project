@@ -28,12 +28,12 @@ public class FollowAuth extends HttpServlet {
             HttpSession session = request.getSession(false);
 
             if (session != null)
-                session.setAttribute("OP", "create_account");
+                session.setAttribute("OP", "follow_page");
 
             authUser = auth.check_authenticated_request(request, response);
 
+            out.println("Request for follow sent");
             auth.follow_page(Integer.parseInt(page_id));
-            response.sendRedirect("/myApp/main");
             
         } catch(AuthenticationErrorException e){
             out.println("<H1> Account not authenticated </H1>");
