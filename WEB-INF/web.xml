@@ -149,6 +149,15 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>CreatePostAuth</servlet-name>
+        <servlet-class>src.CreatePostAuth</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CreatePostAuth</servlet-name>
+        <url-pattern>/createPostAuth</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>DeletePost</servlet-name>
         <servlet-class>src.DeletePost</servlet-class>
     </servlet>

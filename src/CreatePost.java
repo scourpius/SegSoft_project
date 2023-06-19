@@ -18,16 +18,16 @@ public class CreatePost extends HttpServlet {
         out.println("<HEAD>");
         out.println("</HEAD>");
         out.println("<BODY>");
+        out.println("<h3>Create a post for a user!</h3><br>");
         out.println("<form name='postCreationForm'");
-        out.println("<h3>Create a page for a user!</h3><br>");
         out.println("action='http://localhost:8080/myApp/createPostAuth' method='GET'>");
-        out.println("<label for='pageID'>PageID of page you're posting to:</label>");
-        out.print("<input type='number' size=35 name='username'><br>");
+        out.println("<label for='page_id'>page_id:</label>");
+        out.print("<input type='text' size=35 name='page_id'><br>");
         out.println("<label for='postText'>Content of post:</label>");
         out.print("<input type='text' size=35 name='postText'><br>");
-
         out.println("<input type='hidden' value=redirect_url>");
         out.println("<input type='submit' value='Submit'>");
+
         out.println("</form><br><br>");
         out.println("<a href='http://localhost:8080/myApp/main'>");
         out.println("<button>return</button>");

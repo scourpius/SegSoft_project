@@ -262,6 +262,7 @@ public class AuthenticatorImpl extends HttpServlet {
 
     public void create_post(int pageID, String postTime, String postText) throws PageDoesNotExistException, SQLException, AuthenticationErrorException {
         PageObject page = network.getPage(pageID);
+        System.out.println(1);
         if (page.getUserID() == null)
             throw new PageDoesNotExistException();
         if (!account.getPages().contains(page))

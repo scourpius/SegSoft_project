@@ -17,7 +17,10 @@ public class CreatePostAuth extends HttpServlet {
     Account authUser;
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-        int pageID = Integer.parseInt(request.getParameter("pageID"));
+        String page_id = request.getParameter("page_id");
+        
+        int pageID = Integer.parseInt(page_id);
+
         String postText = request.getParameter("postText");
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MM/yy HH:mm");
         String postTime = dtf.format(LocalDateTime.now());
@@ -30,6 +33,7 @@ public class CreatePostAuth extends HttpServlet {
         out.println("<BODY>");
 
         try {
+
             HttpSession session = request.getSession(false);
 
             if (session != null)
