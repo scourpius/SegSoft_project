@@ -18,8 +18,8 @@ public class DeletePage extends HttpServlet {
         out.println("<HEAD>");
         out.println("</HEAD>");
         out.println("<BODY>");
-        out.println("<form name='pageDeletionForm'");
         out.println("<h3>Delete a page for a user!</h3><br>");
+        out.println("<form name='pageDeletionForm'");
         out.println("action='http://localhost:8080/myApp/deletePageAuth' method='GET'>");
         out.println("<label for='pageID'>PageID:</label>");
         out.print("<input type='number' size=35 name='pageID'><br>");

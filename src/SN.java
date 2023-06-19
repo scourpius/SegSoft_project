@@ -11,7 +11,7 @@ import java.util.*;
 public class SN {
     
     //private String dburl = "jdbc:sqlite:/Users/luis_caires/Desktop/SoftwareSecurity/App/test.db";		- Prof's url
-	private String dburl = "jdbc:sqlite:E:\\Downloaded/test.db";	//change this to whatever you want
+	private String dburl = "jdbc:sqlite:/home/rick/Documents/School/Databases/test.db";	//change this to whatever you want
 
     private static Connection theconnection = null;
 
@@ -317,5 +317,16 @@ public class SN {
 
 		return lpages;
 	 }
+
+	public List<PageObject> getPendingFollowers(int page_id) throws SQLException {
+		List<PageObject> lpages = new ArrayList<PageObject>();
+		Statement stmtl = theconnection.createStatement();
+		ResultSet rs    = stmtl.executeQuery("select page_ids from follower where status=\"PENDING\""+" and page_idd="+page_id);
+		while (rs.next()) {
+			PageObject p = getPage(rs.getInt("page_ids"));
+			lpages.add(p);
+		}
+		return lpages;
+	}
 }
 

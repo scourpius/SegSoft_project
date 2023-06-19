@@ -47,6 +47,7 @@ public class AuthenticatorImpl extends HttpServlet {
 
         try (Connection conn = connect()){
             Statement stmt = conn.createStatement();
+            conn.createStatement().execute("DROP TABLE " + tableName);
             
             conn.createStatement().execute("CREATE TABLE IF NOT EXISTS " + tableName + "(\n" +
                     "username text PRIMARY KEY,\n" +
@@ -247,24 +248,20 @@ public class AuthenticatorImpl extends HttpServlet {
         if (account.getUsername().equals(username)){
             account.addPage(page);
             acc.addPage(page);
+            pageList.add(page);
         }
     }
 
-    public void delete_page(int pageID) throws PageDoesNotExistException, SQLException {
+    public void delete_page(int pageID) throws SQLException {
         PageObject page = network.getPage(pageID);
 
-        if (page.getUserID() == null)
-            throw new PageDoesNotExistException();
         network.deletePage(page);
-
+        pageList.remove(page);
         account.remove(page);
     }
 
-    public void create_post(int pageID, String postTime, String postText) throws PageDoesNotExistException, SQLException, AuthenticationErrorException {
+    public void create_post(int pageID, String postTime, String postText) throws SQLException, AuthenticationErrorException {
         PageObject page = network.getPage(pageID);
-        System.out.println(1);
-        if (page.getUserID() == null)
-            throw new PageDoesNotExistException();
         if (!account.getPages().contains(page))
             throw new AuthenticationErrorException();
         network.newPost(pageID, postTime, postText);
@@ -316,6 +313,10 @@ public class AuthenticatorImpl extends HttpServlet {
             network.updatefollowsstatus(followID, pageID, FState.OK);
         else
             network.updatefollowsstatus(followID, pageID, FState.NONE);
+    }
+
+    public List<PageObject> getPendingFollowers(int pageID) throws SQLException {
+        return network.getPendingFollowers(pageID);
     }
 
     public Account check_authenticated_request(HttpServletRequest request, HttpServletResponse response) throws AuthenticationErrorException, PermissionDeniedException, CloneNotSupportedException {

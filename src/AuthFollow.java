@@ -6,7 +6,7 @@ import javax.servlet.http.*;
 import src.Exceptions.*;
 import java.io.*;
 
-public class AuthrorizeFollowAuth extends HttpServlet {
+public class AuthFollow extends HttpServlet {
     public void init() throws ServletException {
         super.init();
     }
@@ -15,7 +15,7 @@ public class AuthrorizeFollowAuth extends HttpServlet {
     Account authUser;
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-        int pageID = Integer.parseInt(request.getParameter("page_id"));
+        int page_id = Integer.parseInt(request.getParameter("page_id"));
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
@@ -28,13 +28,23 @@ public class AuthrorizeFollowAuth extends HttpServlet {
             HttpSession session = request.getSession(false);
 
             if (session != null)
-                session.setAttribute("OP", "create_page");
+                session.setAttribute("OP", "authorize_follow");
 
             authUser = auth.check_authenticated_request(request, response);
 
-            auth.authorize_follow(pageID, authUser.getPages().get(0).getPageId(), true);
-            response.sendRedirect("/myApp/main");
-
+            for (PageObject page : authUser.getPages())
+                if (page.getPageId() == page_id) {
+                    out.println("<H1>Pending followers:</H1>");
+                    for (PageObject pendingFollower : auth.getPendingFollowers(page_id)) {
+                        out.println("<p> PageID: " + pendingFollower.getPageId() + " Page title: " + pendingFollower.getPageTitle() + " Page associated email: " + pendingFollower.getEmail() + "</p>");
+                        out.println("<a href='http://localhost:8080/myApp/authorizeFollowAuth'>");
+                        out.println("<button>Authorize Follower</button>");
+                        out.println("<a href='http://localhost:8080/myApp/authorizeFollowAuth'>");
+                        out.println("<button>Deny Follower</button>");
+                        out.println("</a>");
+                    }
+                }
+            
         } catch(AuthenticationErrorException e){
             out.println("<H1> Account not authenticated </H1>");
         } catch (PermissionDeniedException e){
@@ -44,10 +54,10 @@ public class AuthrorizeFollowAuth extends HttpServlet {
         }
 
         out.println("<a href='http://localhost:8080/myApp/main'>");
-        out.println("<button>Return to main page</button>");
+        out.println("<button>return to main page</button>");
         out.println("</a>");
 
-        out.println("<a href='http://localhost:8080/myApp/createPage'>");
+        out.println("<a href='http://localhost:8080/myApp/createAccount'>");
         out.println("<button>Try again</button>");
         out.println("</a>");
 

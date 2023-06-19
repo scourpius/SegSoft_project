@@ -6,7 +6,7 @@ import javax.servlet.http.*;
 import src.Exceptions.*;
 import java.io.*;
 
-public class DeletePageAuth extends HttpServlet {
+public class AuthorizeFollowAuth extends HttpServlet {
     public void init() throws ServletException {
         super.init();
     }
@@ -15,7 +15,7 @@ public class DeletePageAuth extends HttpServlet {
     Account authUser;
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-        int pageID = Integer.parseInt(request.getParameter("pageID"));
+        int pageID = Integer.parseInt(request.getParameter("page_id"));
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
@@ -28,11 +28,11 @@ public class DeletePageAuth extends HttpServlet {
             HttpSession session = request.getSession(false);
 
             if (session != null)
-                session.setAttribute("OP", "delete_page");
+                session.setAttribute("OP", "create_page");
 
             authUser = auth.check_authenticated_request(request, response);
 
-            auth.delete_page(pageID);
+            auth.authorize_follow(pageID, authUser.getPages().get(0).getPageId(), true);
             response.sendRedirect("/myApp/main");
 
         } catch(AuthenticationErrorException e){
@@ -40,7 +40,7 @@ public class DeletePageAuth extends HttpServlet {
         } catch (PermissionDeniedException e){
             out.println("<H1> Permission Denied </H1>");
         } catch (Exception e) {
-            out.println("<H1> Page does not exist </H1>");
+            out.println("<H1> Error </H1>");
         }
 
         out.println("<a href='http://localhost:8080/myApp/main'>");

@@ -16,7 +16,7 @@ public class ShowPage extends HttpServlet {
     AuthenticatorImpl auth = AuthenticatorImpl.getInstance();
 
     public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException{
-        String page_id = request.getParameter("page_id");
+        int page_id = Integer.parseInt(request.getParameter("page_id"));
 
         response.setContentType("text/html");
         PrintWriter out = response.getWriter();
@@ -34,10 +34,14 @@ public class ShowPage extends HttpServlet {
 
             auth.check_authenticated_request(request, response);
             
-            List<PostObject> posts = auth.access_posts(Integer.parseInt(page_id));
+            List<PostObject> posts = auth.access_posts(page_id);
 
             for(PostObject post : posts)
                 out.println("id: " + post.getPostId() + ", msg: " + post.getPostText() + ", date: " + post.getPostDate());
+
+            out.println("<a href='http://localhost:8080/myApp/authFollow?page_id=" + page_id + "'>");
+            out.println("<button>Authorize followers</button>");
+            out.println("</a>");
 
         } catch (AuthenticationErrorException e) {
             out.println("<H1> User not authenticated </H1>");

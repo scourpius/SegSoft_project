@@ -140,6 +140,15 @@
     </servlet-mapping>
 
     <servlet>
+        <servlet-name>DeletePageAuth</servlet-name>
+        <servlet-class>src.DeletePageAuth</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeletePageAuth</servlet-name>
+        <url-pattern>/deletePageAuth</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
         <servlet-name>CreatePost</servlet-name>
         <servlet-class>src.CreatePost</servlet-class>
     </servlet>
@@ -167,21 +176,21 @@
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>FollowPage</servlet-name>
-        <servlet-class>src.FollowPage</servlet-class>
+        <servlet-name>FollowAuth</servlet-name>
+        <servlet-class>src.FollowAuth</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>FollowPage</servlet-name>
-        <url-pattern>/followPage</url-pattern>
+        <servlet-name>FollowAuth</servlet-name>
+        <url-pattern>/followAuth</url-pattern>
     </servlet-mapping>
 
     <servlet>
-        <servlet-name>AuthorizeFollow</servlet-name>
-        <servlet-class>src.AuthorizeFollow</servlet-class>
+        <servlet-name>AuthFollow</servlet-name>
+        <servlet-class>src.AuthFollow</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>AuthorizeFollow</servlet-name>
-        <url-pattern>/authorizeFollow</url-pattern>
+        <servlet-name>AuthFollow</servlet-name>
+        <url-pattern>/authFollow</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -200,15 +209,6 @@
     <servlet-mapping>
         <servlet-name>ShowPage</servlet-name>
         <url-pattern>/showPage</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>AuthorizeFollow</servlet-name>
-        <servlet-class>src.AuthorizeFollow</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>AuthorizeFollow</servlet-name>
-        <url-pattern>/authorizeFollow</url-pattern>
     </servlet-mapping>
 
     <servlet>
